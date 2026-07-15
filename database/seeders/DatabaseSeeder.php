@@ -12,25 +12,29 @@ class DatabaseSeeder extends Seeder
     {
         // Create Admin user with PIN: 1234
         User::create([
-            'name' => 'Admin',
-            'pin' => Hash::make('1234'),
+            'name' => 'Hunzla Malik',
+            'pin' => Hash::make('2403'),
             'role' => 'admin',
         ]);
 
         // Create Sales Head
         User::create([
-            'name' => 'Sales Head',
-            'pin' => Hash::make('5678'),
+            'name' => 'Awais Anwar',
+            'pin' => Hash::make('0077'),
             'role' => 'saleshead',
         ]);
 
         // Create Delivery Boy
         User::create([
-            'name' => 'John Delivery',
+            'name' => 'Moeen Khalid',
             'pin' => Hash::make('0000'),
             'role' => 'deliveryboy',
         ]);
+        User::create([
+            'name' => 'Arif Hussain ',
+            'pin' => Hash::make('2637'),
+            'role' => 'deliveryboy',
+        ]);
 
-        $this->call(DeliveryRouteSeeder::class);
     }
 }

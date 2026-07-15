@@ -22,7 +22,7 @@ class DeliveryBoyController extends Controller
     public function dashboard()
     {
         if (Auth::user()->hasBlockedRoutes()) {
-            session()->flash('error', 'You have blocked routes. Contact admin to unblock.');
+            session()->flash('error', __('messages.you_have_blocked_routes'));
         }
 
         $routes = $this->deliveryService->getDeliveryBoyRoutes();
@@ -34,12 +34,12 @@ class DeliveryBoyController extends Controller
     {
         if (Auth::user()->hasBlockedRoutes()) {
             return redirect()->route('deliveryboy.dashboard')
-                ->with('error', 'You have blocked routes. Please contact admin.');
+                ->with('error', __('messages.you_have_blocked_routes'));
         }
 
-        if (Auth::user()->hasActiveRoute()) {
+        if (Auth::user()->hasUncompletedRoutes()) {
             return redirect()->route('deliveryboy.dashboard')
-                ->with('error', 'You already have an active delivery. Complete it first.');
+                ->with('error', __('messages.complete_existing_routes'));
         }
 
         return view('deliveryboy.routes.create');
@@ -48,7 +48,11 @@ class DeliveryBoyController extends Controller
     public function storeRoute(StoreRouteRequest $request)
     {
         if (Auth::user()->hasBlockedRoutes()) {
-            return back()->with('error', 'You have blocked routes. Please contact admin.');
+            return back()->with('error', __('messages.you_have_blocked_routes'));
+        }
+
+        if (Auth::user()->hasUncompletedRoutes()) {
+            return back()->with('error', __('messages.complete_existing_routes'));
         }
 
         // Geo-fence check
@@ -69,22 +73,18 @@ class DeliveryBoyController extends Controller
             "🚚 New route created: {$route->to_location}"
         );
 
-        if ($route->audio_path) {
-            $this->chatService->sendMessage(null, null, $route->audio_path);
-        }
-
         return redirect()->route('deliveryboy.dashboard')
-            ->with('success', 'Route created successfully');
+            ->with('success', __('messages.route_created'));
     }
 
     public function updateRouteStatus(DeliveryRoute $route, string $status)
     {
         if ($route->delivery_boy_id !== Auth::id()) {
-            return back()->with('error', 'Unauthorized');
+            return back()->with('error', __('messages.unauthorized'));
         }
 
         if ($route->isBlocked()) {
-            return back()->with('error', 'This route is blocked. Contact admin.');
+            return back()->with('error', __('messages.route_blocked_contact_admin'));
         }
 
         $this->deliveryService->updateStatus($route, $status);
@@ -99,9 +99,9 @@ class DeliveryBoyController extends Controller
         }
 
         $message = match ($status) {
-            'in_progress' => 'Delivery started',
-            'completed' => 'Delivery completed',
-            default => 'Route status updated',
+            'in_progress' => __('messages.delivery_started_msg'),
+            'completed' => __('messages.delivery_completed_msg'),
+            default => __('messages.route_status_updated'),
         };
 
         return back()->with('success', $message);
@@ -110,15 +110,15 @@ class DeliveryBoyController extends Controller
     public function completeRoute(Request $request, DeliveryRoute $route)
     {
         if ($route->delivery_boy_id !== Auth::id()) {
-            return back()->with('error', 'Unauthorized');
+            return back()->with('error', __('messages.unauthorized'));
         }
 
         if ($route->isBlocked()) {
-            return back()->with('error', 'This route is blocked. Contact admin.');
+            return back()->with('error', __('messages.route_blocked_contact_admin'));
         }
 
         if ($route->status !== 'in_progress') {
-            return back()->with('error', 'Route is not in progress.');
+            return back()->with('error', __('messages.route_not_in_progress'));
         }
 
         $request->validate([
@@ -147,7 +147,7 @@ class DeliveryBoyController extends Controller
         }
 
         return redirect()->route('deliveryboy.dashboard')
-            ->with('success', 'Delivery completed successfully');
+            ->with('success', __('messages.delivery_completed_success'));
     }
 
     public function addPitStop(StorePitStopRequest $request, DeliveryRoute $route)
@@ -156,20 +156,20 @@ class DeliveryBoyController extends Controller
 
         if ($route->delivery_boy_id !== Auth::id()) {
             return $wantJson
-                ? response()->json(['message' => 'Unauthorized'], 403)
-                : back()->with('error', 'Unauthorized');
+                ? response()->json(['message' => __('messages.unauthorized')], 403)
+                : back()->with('error', __('messages.unauthorized'));
         }
 
         if ($route->isBlocked()) {
             return $wantJson
-                ? response()->json(['message' => 'This route is blocked.'], 403)
-                : back()->with('error', 'This route is blocked.');
+                ? response()->json(['message' => __('messages.route_blocked_msg')], 403)
+                : back()->with('error', __('messages.route_blocked_msg'));
         }
 
         if ($route->status !== 'in_progress') {
             return $wantJson
-                ? response()->json(['message' => 'Pit stops can only be added during an active delivery.'], 422)
-                : back()->with('error', 'Pit stops can only be added during an active delivery.');
+                ? response()->json(['message' => __('messages.pit_stop_during_active')], 422)
+                : back()->with('error', __('messages.pit_stop_during_active'));
         }
 
         $data = $this->deliveryService->addPitStop(
@@ -183,7 +183,7 @@ class DeliveryBoyController extends Controller
             return response()->json(['success' => true, 'data' => $data]);
         }
 
-        return back()->with('success', 'Pit stop added');
+        return back()->with('success', __('messages.pit_stop_added'));
     }
 
     public function getPitStops(DeliveryRoute $route)
@@ -208,7 +208,7 @@ class DeliveryBoyController extends Controller
     public function editRoute(DeliveryRoute $route)
     {
         if ($route->delivery_boy_id !== Auth::id()) {
-            return back()->with('error', 'Unauthorized');
+            return back()->with('error', __('messages.unauthorized'));
         }
 
         $route->load('stops');
@@ -219,7 +219,7 @@ class DeliveryBoyController extends Controller
     public function updateRoute(Request $request, DeliveryRoute $route)
     {
         if ($route->delivery_boy_id !== Auth::id()) {
-            return back()->with('error', 'Unauthorized');
+            return back()->with('error', __('messages.unauthorized'));
         }
 
         $request->validate([
@@ -247,13 +247,13 @@ class DeliveryBoyController extends Controller
         $route->update($data);
 
         return redirect()->route('deliveryboy.dashboard')
-            ->with('success', 'Route updated successfully');
+            ->with('success', __('messages.route_updated'));
     }
 
     public function updatePitStop(Request $request, DeliveryRoute $route, \App\Models\RouteStop $pitStop)
     {
         if ($route->delivery_boy_id !== Auth::id()) {
-            return back()->with('error', 'Unauthorized');
+            return back()->with('error', __('messages.unauthorized'));
         }
 
         $request->validate([
@@ -273,7 +273,7 @@ class DeliveryBoyController extends Controller
 
         $pitStop->update($data);
 
-        return back()->with('success', 'Pit stop updated');
+        return back()->with('success', __('messages.pit_stop_updated'));
     }
 
     public function deletePitStop(Request $request, DeliveryRoute $route, \App\Models\RouteStop $pitStop)
@@ -281,13 +281,13 @@ class DeliveryBoyController extends Controller
         if ($route->delivery_boy_id !== Auth::id()) {
             return $request->ajax()
                 ? response()->json(['error' => 'Unauthorized'], 403)
-                : back()->with('error', 'Unauthorized');
+                : back()->with('error', __('messages.unauthorized'));
         }
 
         $pitStop->delete();
 
         return $request->ajax()
             ? response()->json(['success' => true])
-            : back()->with('success', 'Pit stop deleted');
+            : back()->with('success', __('messages.pit_stop_deleted'));
     }
 }

@@ -106,6 +106,20 @@
             letter-spacing:.15em;color:rgba(255,255,255,.25);
         }
 
+        /* Back link */
+        .back-link{
+            margin-top:16px;display:inline-flex;align-items:center;
+            gap:6px;font-size:11px;
+            color:rgba(255,255,255,.3);text-decoration:none;
+            transition:all .3s ease;letter-spacing:.03em;
+        }
+        .back-link:hover{color:#ff2ba6}
+        .back-link svg{
+            width:14px;height:14px;color:#fa64b6;
+            transition:all .3s ease;
+        }
+        .back-link:hover svg{color:#ff2ba6;transform:scale(1.1)}
+
         @media(max-width:768px){
             .card{padding:32px 20px}
             .pin{max-width:48px;height:52px;font-size:18px}
@@ -161,6 +175,17 @@
         <div class="footer">
             <p>{{ __('messages.delivery_management_system') }}</p>
         </div>
+
+        <a href="https://portal.sessigmasoft.com/" class="back-link">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                <line x1="16" y1="2" x2="16" y2="6"/>
+                <line x1="8" y1="2" x2="8" y2="6"/>
+                <line x1="3" y1="10" x2="21" y2="10"/>
+                <path d="M9 16l2 2 4-4"/>
+            </svg>
+            <span>Back to Attendance Portal</span>
+        </a>
     </div>
 
     <script>

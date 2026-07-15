@@ -25,7 +25,7 @@ class GeoFenceService
     public function validate(float $lat, float $lng): ?string
     {
         if (!$this->isWithinRange($lat, $lng)) {
-            return 'You are outside the allowed office radius (' . self::ALLOWED_RADIUS_KM . ' KM). Your distance: ' . number_format($this->distance($lat, $lng), 2) . ' KM.';
+            return __('messages.outside_office_radius', ['radius' => self::ALLOWED_RADIUS_KM, 'distance' => number_format($this->distance($lat, $lng), 2)]);
         }
         return null;
     }

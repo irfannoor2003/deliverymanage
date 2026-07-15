@@ -20,10 +20,10 @@
             <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-pink-500 to-purple-500 flex items-center justify-center text-white text-lg font-bold">{{ strtoupper(substr($route->deliveryBoy->name ?? 'NA', 0, 2)) }}</div>
             <div>
                 <div class="text-sm text-gray-500 dark:text-gray-400">{{ __('messages.delivery_boy') }}</div>
-                <div class="text-lg font-bold text-gray-900 dark:text-white">{{ $route->deliveryBoy->name ?? 'N/A' }}</div>
+                <div class="text-lg font-bold text-gray-900 dark:text-white">{{ $route->deliveryBoy->name ?? __('messages.na') }}</div>
             </div>
             <div class="ml-auto">
-                <span class="badge badge-{{ $route->status }}">{{ ucfirst(str_replace('_', ' ', $route->status)) }}</span>
+                <span class="badge badge-{{ $route->status }}">{{ __('messages.' . $route->status) }}</span>
             </div>
         </div>
     </div>
@@ -42,7 +42,7 @@
             </div>
             <div>
                 <div class="text-xs text-gray-500 dark:text-gray-400">{{ __('messages.total_km') }}</div>
-                <div class="font-bold text-pink-500">{{ number_format($route->total_km, 1) }} km</div>
+                <div class="font-bold text-pink-500">{{ number_format($route->total_km, 1) }}{{ __('messages.km_suffix') }}</div>
             </div>
             <div>
                 <div class="text-xs text-gray-500 dark:text-gray-400">{{ __('messages.boc') }}</div>

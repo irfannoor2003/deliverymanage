@@ -4,7 +4,6 @@ namespace App\Notifications;
 
 use App\Models\User;
 use Illuminate\Bus\Queueable;
-use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
 class UserCreatedNotification extends Notification
@@ -20,18 +19,7 @@ class UserCreatedNotification extends Notification
 
     public function via(object $notifiable): array
     {
-        return ['mail', 'database'];
-    }
-
-    public function toMail(object $notifiable): MailMessage
-    {
-        return (new MailMessage)
-            ->subject('New User Created: ' . $this->createdUser->name)
-            ->greeting('Hello ' . $notifiable->name)
-            ->line('A new user has been created:')
-            ->line('Name: ' . $this->createdUser->name)
-            ->line('Role: ' . ucfirst(str_replace('_', ' ', $this->createdUser->role)))
-            ->action('View Members', url('/admin/members'));
+        return ['database'];
     }
 
     public function toArray(object $notifiable): array

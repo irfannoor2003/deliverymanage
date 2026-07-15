@@ -42,12 +42,12 @@
                     <td>
                         <div class="flex items-center gap-2">
                             <div class="w-7 h-7 rounded-full bg-pink-500/10 text-pink-500 flex items-center justify-center text-[9px] font-bold">{{ strtoupper(substr($route->deliveryBoy->name ?? 'NA', 0, 2)) }}</div>
-                            <span class="font-semibold">{{ $route->deliveryBoy->name ?? 'N/A' }}</span>
+                            <span class="font-semibold">{{ $route->deliveryBoy->name ?? __('messages.na') }}</span>
                         </div>
                     </td>
                     <td class="text-gray-500 dark:text-gray-400">{{ $route->from_location }} → {{ $route->to_location }}</td>
-                    <td class="font-mono font-bold text-pink-500">{{ number_format($route->total_km, 1) }} km</td>
-                    <td><span class="badge badge-{{ $route->status }}">{{ ucfirst(str_replace('_', ' ', $route->status)) }}</span></td>
+                    <td class="font-mono font-bold text-pink-500">{{ number_format($route->total_km, 1) }}{{ __('messages.km_suffix') }}</td>
+                    <td><span class="badge badge-{{ $route->status }}">{{ __('messages.' . $route->status) }}</span></td>
                     <td class="text-gray-500 dark:text-gray-400 text-sm">{{ $route->created_at->format('d M, Y') }}</td>
                 </tr>
                 @endforeach

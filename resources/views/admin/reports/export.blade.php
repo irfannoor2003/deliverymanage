@@ -39,10 +39,10 @@
             <tbody>
                 @foreach($routes as $route)
                 <tr>
-                    <td class="font-semibold">{{ $route->deliveryBoy->name ?? 'N/A' }}</td>
+                    <td class="font-semibold">{{ $route->deliveryBoy->name ?? __('messages.na') }}</td>
                     <td class="text-gray-500 dark:text-gray-400">{{ $route->from_location }} → {{ $route->to_location }}</td>
                     <td class="font-mono font-bold text-pink-500">{{ number_format($route->total_km, 1) }}</td>
-                    <td><span class="badge badge-{{ $route->status }}">{{ ucfirst(str_replace('_', ' ', $route->status)) }}</span></td>
+                    <td><span class="badge badge-{{ $route->status }}">{{ __('messages.' . $route->status) }}</span></td>
                     <td class="text-gray-500 dark:text-gray-400 text-sm">{{ $route->created_at->format('d M, Y') }}</td>
                 </tr>
                 @endforeach

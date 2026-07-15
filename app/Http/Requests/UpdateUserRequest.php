@@ -19,6 +19,6 @@ class UpdateUserRequest extends FormRequest
 
     public function messages(): array
     {
-        return ['pin.size' => 'PIN must be exactly 4 digits'];
+        return ['pin.size' => __('messages.pin_four_digits')];
     }
 }

@@ -46,7 +46,7 @@ class AdminController extends Controller
     public function storeMember(StoreUserRequest $request)
     {
         $this->userService->create($request->validated());
-        return redirect()->route('admin.members')->with('success', 'Member created successfully');
+        return redirect()->route('admin.members')->with('success', __('messages.member_created'));
     }
 
     public function editMember(User $member)
@@ -57,16 +57,16 @@ class AdminController extends Controller
     public function updateMember(UpdateUserRequest $request, User $member)
     {
         $this->userService->update($member, $request->validated());
-        return redirect()->route('admin.members')->with('success', 'Member updated successfully');
+        return redirect()->route('admin.members')->with('success', __('messages.member_updated'));
     }
 
     public function destroyMember(User $member)
     {
         if (Auth::id() === $member->id) {
-            return back()->with('error', 'You cannot delete yourself');
+            return back()->with('error', __('messages.cannot_delete_self'));
         }
         $this->userService->delete($member);
-        return redirect()->route('admin.members')->with('success', 'Member deleted successfully');
+        return redirect()->route('admin.members')->with('success', __('messages.member_deleted'));
     }
 
     public function reports()
@@ -97,7 +97,7 @@ class AdminController extends Controller
     public function unblockDelivery(User $user, \App\Models\DeliveryRoute $route)
     {
         $this->deliveryService->unblock($route);
-        return back()->with('success', 'Delivery #' . $route->id . ' unblocked');
+        return back()->with('success', __('messages.delivery_unblocked_msg', ['id' => $route->id]));
     }
 
     public function viewRoute(\App\Models\DeliveryRoute $route)

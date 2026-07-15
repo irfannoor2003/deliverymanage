@@ -28,7 +28,7 @@
                 </div>
                 <div>
                     <div class="text-2xl font-bold text-gray-900 dark:text-white">{{ $stats['total_routes'] }}</div>
-                    <div class="text-xs text-gray-500 dark:text-gray-400">Total Routes</div>
+                    <div class="text-xs text-gray-500 dark:text-gray-400">{{ __('messages.total_routes') }}</div>
                 </div>
             </div>
         </div>
@@ -39,7 +39,7 @@
                 </div>
                 <div>
                     <div class="text-2xl font-bold text-gray-900 dark:text-white">{{ $stats['pending_routes'] }}</div>
-                    <div class="text-xs text-gray-500 dark:text-gray-400">Pending</div>
+                    <div class="text-xs text-gray-500 dark:text-gray-400">{{ __('messages.pending') }}</div>
                 </div>
             </div>
         </div>
@@ -50,7 +50,7 @@
                 </div>
                 <div>
                     <div class="text-2xl font-bold text-gray-900 dark:text-white">{{ $stats['in_progress_routes'] }}</div>
-                    <div class="text-xs text-gray-500 dark:text-gray-400">In Progress</div>
+                    <div class="text-xs text-gray-500 dark:text-gray-400">{{ __('messages.in_progress') }}</div>
                 </div>
             </div>
         </div>
@@ -61,7 +61,7 @@
                 </div>
                 <div>
                     <div class="text-2xl font-bold text-gray-900 dark:text-white">{{ $stats['completed_routes'] }}</div>
-                    <div class="text-xs text-gray-500 dark:text-gray-400">Completed</div>
+                    <div class="text-xs text-gray-500 dark:text-gray-400">{{ __('messages.completed') }}</div>
                 </div>
             </div>
         </div>
@@ -71,10 +71,10 @@
     @forelse($routes as $route)
     <div class="glass-card p-6 mb-4">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
-            <span class="badge badge-{{ $route->status }}">{{ ucfirst(str_replace('_', ' ', $route->status)) }}</span>
+            <span class="badge badge-{{ $route->status }}">{{ __('messages.' . $route->status) }}</span>
             <div class="text-right">
-                <div class="text-xl font-bold text-pink-500">{{ number_format($route->total_km, 1) }} km</div>
-                <div class="text-xs text-gray-500 dark:text-gray-400">Note: {{ $route->boc ?? 'N/A' }}</div>
+                <div class="text-xl font-bold text-pink-500">{{ number_format($route->total_km, 1) }}{{ __('messages.km_suffix') }}</div>
+                <div class="text-xs text-gray-500 dark:text-gray-400">{{ __('messages.boc') }}: {{ $route->boc ?? __('messages.na') }}</div>
             </div>
         </div>
 
@@ -89,7 +89,7 @@
             </div>
             <div class="text-center flex-1">
                 <div class="w-3 h-3 rounded-full bg-pink-500 mx-auto mb-1"></div>
-                <div class="text-[10px] font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">To</div>
+                <div class="text-[10px] font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">{{ __('messages.to') }}</div>
                 <div class="text-sm font-semibold text-gray-900 dark:text-white">{{ $route->to_location }}</div>
             </div>
         </div>
@@ -98,15 +98,15 @@
         <div class="mb-4">
             <h4 class="flex items-center gap-1.5 text-xs font-semibold text-pink-500 mb-2 uppercase tracking-wide">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="14" height="14"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/></svg>
-                Pit Stops ({{ $route->stops->count() }})
+                {{ __('messages.pit_stops') }} ({{ $route->stops->count() }})
             </h4>
             <div class="flex flex-wrap gap-2">
                 @foreach($route->stops as $stop)
                 <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-pink-500/5 border border-pink-500/10 text-xs font-medium text-gray-700 dark:text-gray-300" id="stop-{{ $stop->id }}">
                     <span class="w-4 h-4 rounded-full bg-pink-500/20 text-pink-500 text-[9px] font-bold flex items-center justify-center">{{ $loop->index + 1 }}</span>
-                    {{ $stop->stop_name }} <span class="text-pink-500 font-mono">({{ $stop->stop_km }} km)</span>
+                    {{ $stop->stop_name }} <span class="text-pink-500 font-mono">({{ $stop->stop_km }}{{ __('messages.km_suffix') }})</span>
                     @if($route->status !== 'completed')
-                    <button type="button" onclick="deleteRoutePitStop({{ $route->id }}, {{ $stop->id }})" class="p-0.5 text-gray-400 hover:text-red-500 rounded-full hover:bg-red-500/10 transition-all" title="Delete">
+                    <button type="button" onclick="deleteRoutePitStop({{ $route->id }}, {{ $stop->id }})" class="p-0.5 text-gray-400 hover:text-red-500 rounded-full hover:bg-red-500/10 transition-all" title="{{ __('messages.delete') }}">
                         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="12" height="12"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                     </button>
                     @endif
@@ -135,9 +135,9 @@
         <div class="w-16 h-16 rounded-2xl bg-pink-500/10 flex items-center justify-center mx-auto mb-5">
             <svg class="w-8 h-8 text-pink-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
         </div>
-        <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">No Routes Yet</h3>
-        <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">Start by creating your first delivery route</p>
-        <a href="{{ route('deliveryboy.routes.create') }}" class="btn btn-primary">Create First Route</a>
+        <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">{{ __('messages.no_routes_yet') }}</h3>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">{{ __('messages.start_creating_route') }}</p>
+        <a href="{{ route('deliveryboy.routes.create') }}" class="btn btn-primary">{{ __('messages.create_first_route') }}</a>
     </div>
     @endforelse
 </div>
@@ -199,7 +199,7 @@
                 </div>
                 <div>
                     <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{{ __('messages.boc') }}</label>
-                    <input type="text" name="boc" class="glass-input" placeholder="Optional">
+                    <input type="text" name="boc" class="glass-input" placeholder="{{ __('messages.optional') }}">
                 </div>
                 <div>
                     <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{{ __('messages.image') }}</label>
@@ -223,7 +223,7 @@
                         <div>
                             <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{{ __('messages.stop_name') }}</label>
                             <div class="relative">
-                                <input type="text" name="stop_name" class="glass-input pr-10" id="modalStopName" placeholder="Pit stop name">
+                                <input type="text" name="stop_name" class="glass-input pr-10" id="modalStopName" placeholder="{{ __('messages.pit_stop_name_placeholder') }}">
                                 <button type="button" onclick="startSpeechToText('modalStopName')" class="absolute right-2 top-1/2 -translate-y-1/2 audio-btn" title="{{ __('messages.record_audio') }}">
                                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/></svg>
                                 </button>
@@ -372,9 +372,9 @@
         var name = document.getElementById('modalStopName').value.trim();
         var km = document.querySelector('#pitStopFields input[name="stop_km"]').value;
         var imageInput = document.querySelector('#pitStopFields input[name="stop_image"]');
-        if (!name) { alert('Please enter a stop name.'); return; }
+        if (!name) { alert('{{ __('messages.enter_stop_name') }}'); return; }
         var submitBtn = document.querySelector('#pitStopFields .btn-primary');
-        if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Adding...'; }
+        if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = '{{ __('messages.adding') }}'; }
         var formData = new FormData();
         formData.append('_token', '{{ csrf_token() }}');
         formData.append('stop_name', name);
@@ -401,14 +401,14 @@
                 refreshPitStops();
             } else if (obj.status === 422 && obj.data.errors) {
                 var msgs = Object.values(obj.data.errors).flat();
-                alert('Validation error(s):\n- ' + msgs.join('\n- '));
+                alert('{{ __('messages.validation_errors') }}\n- ' + msgs.join('\n- '));
             } else {
-                alert(obj.data.message || 'Error adding pit stop');
+                alert(obj.data.message || '{{ __('messages.error_adding_pit_stop') }}');
             }
         })
         .catch(function() {
             if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = '{{ __('messages.add_pit_stop') }}'; }
-            alert('Network error. Please check your connection and try again.');
+            alert('{{ __('messages.network_error') }}');
         });
     }
     function refreshPitStops() {
@@ -419,21 +419,21 @@
                 var container = document.getElementById('existingPitStops');
                 container.innerHTML = '';
                 if (!stops || stops.length === 0) {
-                    container.innerHTML = '<p class="text-xs text-gray-400 dark:text-gray-500">No pit stops added yet</p>';
+                    container.innerHTML = '<p class="text-xs text-gray-400 dark:text-gray-500">{{ __('messages.no_pit_stops_yet') }}</p>';
                     return;
                 }
                 stops.forEach(function(s) {
                     var el = document.createElement('div');
                     el.className = 'flex items-center justify-between px-3 py-2 rounded-lg bg-gray-50 dark:bg-white/5 text-xs';
                     var imgHtml = s.image_path ? '<img src="/storage/' + s.image_path + '" class="w-8 h-8 rounded-lg object-cover ml-2">' : '';
-                    el.innerHTML = '<div class="flex items-center gap-2"><span class="w-5 h-5 rounded-full bg-pink-500/20 text-pink-500 text-[9px] font-bold flex items-center justify-center flex-shrink-0">' + s.order + '</span><span class="font-medium text-gray-700 dark:text-gray-300">' + s.stop_name + '</span><span class="text-pink-500 font-mono">' + s.stop_km + ' km</span></div><div class="flex items-center gap-1">' + imgHtml + '</div>';
+                    el.innerHTML = '<div class="flex items-center gap-2"><span class="w-5 h-5 rounded-full bg-pink-500/20 text-pink-500 text-[9px] font-bold flex items-center justify-center flex-shrink-0">' + s.order + '</span><span class="font-medium text-gray-700 dark:text-gray-300">' + s.stop_name + '</span><span class="text-pink-500 font-mono">' + s.stop_km + '{{ __('messages.km_suffix') }}</span></div><div class="flex items-center gap-1">' + imgHtml + '</div>';
                     container.appendChild(el);
                 });
             })
             .catch(function() {});
     }
     function deleteRoutePitStop(routeId, stopId) {
-        if (!confirm('Delete this pit stop?')) return;
+        if (!confirm('{{ __('messages.delete_pit_stop_confirm') }}')) return;
         fetch('/deliveryboy/routes/' + routeId + '/pit-stop/' + stopId, {
             method: 'DELETE',
             headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'X-Requested-With': 'XMLHttpRequest' },
@@ -449,7 +449,7 @@
     }
 
     function deletePitStop(stopId) {
-        if (!currentRouteId || !confirm('Delete this pit stop?')) return;
+        if (!currentRouteId || !confirm('{{ __('messages.delete_pit_stop_confirm') }}')) return;
         fetch('/deliveryboy/routes/' + currentRouteId + '/pit-stop/' + stopId, {
             method: 'DELETE',
             headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'X-Requested-With': 'XMLHttpRequest' },

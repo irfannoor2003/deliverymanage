@@ -4,7 +4,6 @@ namespace App\Notifications;
 
 use App\Models\DeliveryRoute;
 use Illuminate\Bus\Queueable;
-use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
 class DeliveryBlockedNotification extends Notification
@@ -20,20 +19,7 @@ class DeliveryBlockedNotification extends Notification
 
     public function via(object $notifiable): array
     {
-        return ['mail', 'database'];
-    }
-
-    public function toMail(object $notifiable): MailMessage
-    {
-        return (new MailMessage)
-            ->subject('Delivery #' . $this->route->id . ' Blocked')
-            ->greeting('Hello ' . $notifiable->name)
-            ->line('Delivery route #' . $this->route->id . ' has been blocked.')
-            ->line('From: ' . $this->route->from_location)
-            ->line('To: ' . $this->route->to_location)
-            ->line('Status: ' . ucfirst(str_replace('_', ' ', $this->route->status)))
-            ->action('View Route', url('/deliveryboy/dashboard'))
-            ->line('Please contact admin for further instructions.');
+        return ['database'];
     }
 
     public function toArray(object $notifiable): array

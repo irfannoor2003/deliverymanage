@@ -20,8 +20,8 @@ class StoreUserRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'pin.unique' => 'This PIN is already taken',
-            'pin.size' => 'PIN must be exactly 4 digits',
+            'pin.unique' => __('messages.pin_taken'),
+            'pin.size' => __('messages.pin_four_digits'),
         ];
     }
 }

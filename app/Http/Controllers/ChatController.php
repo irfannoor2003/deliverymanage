@@ -29,10 +29,10 @@ class ChatController extends Controller
         );
 
         if ($request->wantsJson() || $request->ajax()) {
-            return response()->json(['success' => true, 'message' => 'Message sent']);
+            return response()->json(['success' => true, 'message' => __('messages.message_sent')]);
         }
 
-        return back()->with('success', 'Message sent');
+        return back()->with('success', __('messages.message_sent'));
     }
 
     public function getMessages()

@@ -2,14 +2,12 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable, HasRoles;
+    use Notifiable;
 
     protected $fillable = [
         'name',
@@ -68,5 +66,10 @@ class User extends Authenticatable
     public function hasActiveRoute(): bool
     {
         return $this->deliveryRoutes()->where('status', 'in_progress')->exists();
+    }
+
+    public function hasUncompletedRoutes(): bool
+    {
+        return $this->deliveryRoutes()->whereIn('status', ['pending', 'in_progress', 'blocked'])->exists();
     }
 }

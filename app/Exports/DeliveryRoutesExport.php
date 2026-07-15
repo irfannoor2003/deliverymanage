@@ -57,16 +57,16 @@ class DeliveryRoutesExport implements FromCollection, WithHeadings, WithMapping
     public function headings(): array
     {
         return [
-            'Type',
-            'Delivery ID',
-            'Delivery Boy',
-            'From',
-            'To',
-            'Note / Purpose',
-            'Status',
-            'KM',
-            'Total Trip KM (Pitstops)',
-            'Date',
+            __('messages.type'),
+            __('messages.delivery_id'),
+            __('messages.delivery_boy'),
+            __('messages.from'),
+            __('messages.to'),
+            __('messages.note_purpose'),
+            __('messages.status'),
+            __('messages.km'),
+            __('messages.total_trip_km'),
+            __('messages.date'),
         ];
     }
 
@@ -74,11 +74,11 @@ class DeliveryRoutesExport implements FromCollection, WithHeadings, WithMapping
     {
         if ($row instanceof \App\Models\RouteStop) {
             return [
-                "Pitstop of Delivery #{$row->delivery_route_id}",
+                __('messages.pitstop_of_delivery', ['id' => $row->delivery_route_id]),
                 $row->delivery_route_id,
-                $row->deliveryRoute->deliveryBoy->name ?? '-',
-                $row->deliveryRoute->from_location ?? '-',
-                $row->deliveryRoute->to_location ?? '-',
+                $row->deliveryRoute->deliveryBoy->name ?? __('messages.na'),
+                $row->deliveryRoute->from_location ?? __('messages.na'),
+                $row->deliveryRoute->to_location ?? __('messages.na'),
                 $row->stop_name,
                 '-',
                 $row->stop_km,
@@ -90,13 +90,13 @@ class DeliveryRoutesExport implements FromCollection, WithHeadings, WithMapping
         $totalPitstopKm = $row->stops->sum('stop_km');
 
         return [
-            'Delivery',
+            __('messages.delivery'),
             $row->id,
-            $row->deliveryBoy->name ?? '-',
+            $row->deliveryBoy->name ?? __('messages.na'),
             $row->from_location,
             $row->to_location,
-            $row->boc ?? '-',
-            ucfirst(str_replace('_', ' ', $row->status)),
+            $row->boc ?? __('messages.na'),
+            __('messages.' . $row->status),
             $row->total_km,
             $totalPitstopKm,
             $row->created_at->format('Y-m-d H:i'),

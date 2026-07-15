@@ -542,11 +542,11 @@
                         container.scrollTop = container.scrollHeight;
 
                         if (!isSent && 'Notification' in window && Notification.permission === 'granted') {
-                            var nName = msg.sender ? msg.sender.name : 'Team Member';
+                            var nName = msg.sender ? msg.sender.name : '{{ __('messages.team_member') }}';
                             if (msg.content) {
-                                new Notification('New message from ' + nName, { body: msg.content, icon: '/favicon.ico' });
+                                new Notification('{{ __('messages.notif_new_message_title') }}', { body: nName + ': ' + msg.content, icon: '/favicon.png' });
                             } else if (msg.type === 'audio') {
-                                new Notification('New voice message from ' + nName, { icon: '/favicon.ico' });
+                                new Notification('{{ __('messages.notif_new_voice_title') }}', { body: nName, icon: '/favicon.png' });
                             }
                         }
                     });

@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', __('messages.app_name'))</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <link rel="icon" type="image/png" href="/favicon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     @vite('resources/css/app.css')
@@ -63,8 +64,8 @@
     <!-- Dropdown -->
     <div id="notifDropdown" class="absolute right-0 mt-2 w-80 rounded-2xl bg-white dark:bg-[#111] border border-gray-200 dark:border-white/10 shadow-2xl shadow-black/20 overflow-hidden hidden z-[99999]">
         <div class="p-3 border-b border-gray-100 dark:border-white/5 flex items-center justify-between">
-            <span class="text-sm font-bold text-gray-900 dark:text-white">Notifications</span>
-            <button onclick="markAllNotifRead()" class="text-[10px] font-bold text-pink-500 hover:underline">Mark all read</button>
+            <span class="text-sm font-bold text-gray-900 dark:text-white">{{ __('messages.notifications') }}</span>
+            <button onclick="markAllNotifRead()" class="text-[10px] font-bold text-pink-500 hover:underline">{{ __('messages.mark_all_read') }}</button>
         </div>
         <div id="notifList" class="max-h-80 overflow-y-auto">
             <div class="p-4 text-center text-sm text-gray-500 dark:text-gray-400">Loading...</div>
@@ -83,7 +84,7 @@
         <span class="font-bold text-gray-900 dark:text-white text-lg tracking-tight">{{ __('messages.app_name') }}</span>
     </a>
     <div class="flex items-center gap-2">
-        <span class="px-3 py-1.5 rounded-xl bg-pink-500/10 text-pink-500 text-[10px] font-bold uppercase">{{ str_replace('-', ' ', auth()->user()->role) }}</span>
+        <span class="px-3 py-1.5 rounded-xl bg-pink-500/10 text-pink-500 text-[10px] font-bold uppercase">{{ __('messages.role_' . auth()->user()->role) }}</span>
         <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-pink-500 to-purple-500 flex items-center justify-center text-white text-xs font-bold">{{ strtoupper(substr(auth()->user()->name, 0, 2)) }}</div>
     </div>
 </div>
@@ -93,17 +94,25 @@
 <main class="relative z-10 min-h-screen pb-28 sm:pb-24">
     @if(session('success'))
     <div class="fixed top-20 right-4 z-50 animate-slide-down">
-        <div class="flex items-center gap-3 px-4 py-3 rounded-2xl bg-emerald-500/10 dark:bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-sm font-medium shadow-lg backdrop-blur-xl">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        <div class="flex items-center gap-3 px-4 py-3 rounded-2xl bg-emerald-50 dark:bg-emerald-900/80 border border-emerald-300 dark:border-emerald-700 text-emerald-800 dark:text-emerald-200 text-sm font-semibold shadow-xl">
+            <svg class="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
             {{ session('success') }}
         </div>
     </div>
     @endif
     @if(session('error'))
     <div class="fixed top-20 right-4 z-50 animate-slide-down">
-        <div class="flex items-center gap-3 px-4 py-3 rounded-2xl bg-rose-500/10 dark:bg-rose-500/10 border border-rose-500/20 text-rose-600 dark:text-rose-400 text-sm font-medium shadow-lg backdrop-blur-xl">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        <div class="flex items-center gap-3 px-4 py-3 rounded-2xl bg-rose-50 dark:bg-rose-900/80 border border-rose-300 dark:border-rose-700 text-rose-800 dark:text-rose-200 text-sm font-semibold shadow-xl">
+            <svg class="w-5 h-5 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
             {{ session('error') }}
+        </div>
+    </div>
+    @endif
+    @if(session('warning'))
+    <div class="fixed top-20 right-4 z-50 animate-slide-down">
+        <div class="flex items-center gap-3 px-4 py-3 rounded-2xl bg-amber-50 dark:bg-amber-900/80 border border-amber-300 dark:border-amber-700 text-amber-800 dark:text-amber-200 text-sm font-semibold shadow-xl">
+            <svg class="w-5 h-5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/></svg>
+            {{ session('warning') }}
         </div>
     </div>
     @endif
@@ -190,12 +199,12 @@ async function getWeather() {
         const tempEl = document.getElementById('temp');
         const cityEl = document.getElementById('city');
         if(tempEl) tempEl.innerText = data.current_weather.temperature + "°C";
-        if(cityEl) cityEl.innerText = "Lahore";
+        if(cityEl) cityEl.innerText = "{{ __('messages.city_lahore') }}";
     } catch {
         const tempEl = document.getElementById('temp');
         const cityEl = document.getElementById('city');
         if(tempEl) tempEl.innerText = "--°C";
-        if(cityEl) cityEl.innerText = "Offline";
+        if(cityEl) cityEl.innerText = "{{ __('messages.offline') }}";
     }
 }
 getWeather();
@@ -222,7 +231,7 @@ let prevCount = 0;
 function showBrowserNotif(title, body) {
     if (!('Notification' in window) || Notification.permission !== 'granted') return;
     try {
-        const n = new Notification(title, { body, icon: '/favicon.ico', tag: 'delivery-notif' });
+        const n = new Notification(title, { body, icon: '/favicon.png', tag: 'delivery-notif' });
         n.onclick = () => { window.focus(); n.close(); };
     } catch(e) {}
 }
@@ -248,7 +257,7 @@ function fetchNotifCount() {
                         .then(notifs => {
                             if (notifs.length > 0) {
                                 const data = notifs[0].data || {};
-                                showBrowserNotif(data.title || 'Notification', data.message || '');
+                                showBrowserNotif(data.title || '{{ __('messages.notification') }}', data.message || '');
                             }
                         }).catch(() => {});
                 }
@@ -261,12 +270,12 @@ function fetchNotifCount() {
 }
 
 function fetchNotifications() {
-    notifList.innerHTML = '<div class="p-4 text-center text-sm text-gray-500">Loading...</div>';
+        notifList.innerHTML = '<div class="p-4 text-center text-sm text-gray-500">{{ __('messages.loading') }}</div>';
     fetch('/notifications')
         .then(r => r.json())
         .then(notifs => {
             if (notifs.length === 0) {
-                notifList.innerHTML = '<div class="p-4 text-center text-sm text-gray-500">No notifications</div>';
+                notifList.innerHTML = '<div class="p-4 text-center text-sm text-gray-500">{{ __('messages.no_notifications') }}</div>';
                 return;
             }
             let html = '';
@@ -275,16 +284,16 @@ function fetchNotifications() {
                 const isUnread = n.read_at === null;
                 html += `<div class="p-3 border-b border-gray-100 dark:border-white/5 flex items-start gap-3 ${isUnread ? 'bg-pink-500/5' : ''}">
                     <div class="flex-1 min-w-0">
-                        <div class="text-sm font-semibold text-gray-900 dark:text-white">${data.title || 'Notification'}</div>
+                        <div class="text-sm font-semibold text-gray-900 dark:text-white">${data.title || '{{ __('messages.notification') }}'}</div>
                         <div class="text-xs text-gray-500 dark:text-gray-400">${data.message || ''}</div>
                         <div class="text-[10px] text-gray-400 mt-1">${new Date(n.created_at).toLocaleString()}</div>
                     </div>
-                    ${isUnread ? `<button onclick="markNotifRead('${n.id}')" class="text-[10px] text-pink-500 hover:underline flex-shrink-0">Read</button>` : ''}
+                    ${isUnread ? `<button onclick="markNotifRead('${n.id}')" class="text-[10px] text-pink-500 hover:underline flex-shrink-0">{{ __('messages.read') }}</button>` : ''}
                 </div>`;
             });
             notifList.innerHTML = html;
         }).catch(() => {
-            notifList.innerHTML = '<div class="p-4 text-center text-sm text-red-500">Failed to load</div>';
+            notifList.innerHTML = '<div class="p-4 text-center text-sm text-red-500">{{ __('messages.failed_to_load') }}</div>';
         });
 }
 

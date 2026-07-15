@@ -40,7 +40,7 @@
                             @php
                             $roleColors = ['admin' => 'bg-purple-500/10 text-purple-500', 'saleshead' => 'bg-blue-500/10 text-blue-500', 'deliveryboy' => 'bg-emerald-500/10 text-emerald-500'];
                             @endphp
-                            <span class="badge {{ $roleColors[$member->role] ?? 'bg-gray-500/10 text-gray-500' }}">{{ ucfirst($member->role) }}</span>
+                            <span class="badge {{ $roleColors[$member->role] ?? 'bg-gray-500/10 text-gray-500' }}">{{ __('messages.role_' . $member->role) }}</span>
                         </td>
                         <td>
                             <code class="text-sm tracking-widest text-gray-400 bg-gray-100 dark:bg-white/5 px-2 py-1 rounded-md">••••</code>

@@ -12,31 +12,31 @@
     <div class="glass-card p-4 mb-6">
         <form method="GET" class="flex flex-wrap gap-3 items-end">
             <div>
-                <label class="block text-[10px] font-medium text-gray-500 dark:text-gray-400 mb-1">Action</label>
+                <label class="block text-[10px] font-medium text-gray-500 dark:text-gray-400 mb-1">{{ __('messages.action') }}</label>
                 <select name="action" class="glass-input !py-1.5 text-xs">
-                    <option value="">All</option>
-                    <option value="login" {{ request('action') === 'login' ? 'selected' : '' }}>Login</option>
-                    <option value="logout" {{ request('action') === 'logout' ? 'selected' : '' }}>Logout</option>
-                    <option value="delivery_started" {{ request('action') === 'delivery_started' ? 'selected' : '' }}>Delivery Started</option>
-                    <option value="delivery_completed" {{ request('action') === 'delivery_completed' ? 'selected' : '' }}>Delivery Completed</option>
-                    <option value="delivery_blocked" {{ request('action') === 'delivery_blocked' ? 'selected' : '' }}>Delivery Blocked</option>
-                    <option value="delivery_unblocked" {{ request('action') === 'delivery_unblocked' ? 'selected' : '' }}>Delivery Unblocked</option>
-                    <option value="user_created" {{ request('action') === 'user_created' ? 'selected' : '' }}>User Created</option>
-                    <option value="user_deleted" {{ request('action') === 'user_deleted' ? 'selected' : '' }}>User Deleted</option>
-                    <option value="chat_sent" {{ request('action') === 'chat_sent' ? 'selected' : '' }}>Chat Sent</option>
+                    <option value="">{{ __('messages.all') }}</option>
+                    <option value="login" {{ request('action') === 'login' ? 'selected' : '' }}>{{ __('messages.login') }}</option>
+                    <option value="logout" {{ request('action') === 'logout' ? 'selected' : '' }}>{{ __('messages.logout') }}</option>
+                    <option value="delivery_started" {{ request('action') === 'delivery_started' ? 'selected' : '' }}>{{ __('messages.delivery_started') }}</option>
+                    <option value="delivery_completed" {{ request('action') === 'delivery_completed' ? 'selected' : '' }}>{{ __('messages.delivery_completed') }}</option>
+                    <option value="delivery_blocked" {{ request('action') === 'delivery_blocked' ? 'selected' : '' }}>{{ __('messages.delivery_blocked') }}</option>
+                    <option value="delivery_unblocked" {{ request('action') === 'delivery_unblocked' ? 'selected' : '' }}>{{ __('messages.delivery_unblocked') }}</option>
+                    <option value="user_created" {{ request('action') === 'user_created' ? 'selected' : '' }}>{{ __('messages.user_created') }}</option>
+                    <option value="user_deleted" {{ request('action') === 'user_deleted' ? 'selected' : '' }}>{{ __('messages.user_deleted') }}</option>
+                    <option value="chat_sent" {{ request('action') === 'chat_sent' ? 'selected' : '' }}>{{ __('messages.chat_sent') }}</option>
                 </select>
             </div>
             <div>
-                <label class="block text-[10px] font-medium text-gray-500 dark:text-gray-400 mb-1">From</label>
+                <label class="block text-[10px] font-medium text-gray-500 dark:text-gray-400 mb-1">{{ __('messages.from') }}</label>
                 <input type="date" name="from_date" class="glass-input !py-1.5 text-xs" value="{{ request('from_date') }}">
             </div>
             <div>
-                <label class="block text-[10px] font-medium text-gray-500 dark:text-gray-400 mb-1">To</label>
+                <label class="block text-[10px] font-medium text-gray-500 dark:text-gray-400 mb-1">{{ __('messages.to') }}</label>
                 <input type="date" name="to_date" class="glass-input !py-1.5 text-xs" value="{{ request('to_date') }}">
             </div>
             <div class="flex gap-2">
-                <button type="submit" class="btn btn-primary btn-sm">Filter</button>
-                <a href="{{ route('admin.activity-logs') }}" class="btn btn-secondary btn-sm">Reset</a>
+                <button type="submit" class="btn btn-primary btn-sm">{{ __('messages.filter') }}</button>
+                <a href="{{ route('admin.activity-logs') }}" class="btn btn-secondary btn-sm">{{ __('messages.reset') }}</a>
             </div>
         </form>
     </div>
@@ -47,11 +47,11 @@
             <table class="glass-table">
                 <thead>
                     <tr>
-                        <th>User</th>
-                        <th>Action</th>
-                        <th>Description</th>
-                        <th>IP Address</th>
-                        <th>Date</th>
+                        <th>{{ __('messages.user') }}</th>
+                        <th>{{ __('messages.action') }}</th>
+                        <th>{{ __('messages.description') }}</th>
+                        <th>{{ __('messages.ip_address') }}</th>
+                        <th>{{ __('messages.date') }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -60,12 +60,12 @@
                         <td>
                             <div class="flex items-center gap-2">
                                 <div class="w-7 h-7 rounded-full bg-pink-500/10 text-pink-500 flex items-center justify-center text-[9px] font-bold">{{ strtoupper(substr($log->user->name ?? 'NA', 0, 2)) }}</div>
-                                <span class="font-semibold text-sm">{{ $log->user->name ?? 'N/A' }}</span>
+                                <span class="font-semibold text-sm">{{ $log->user->name ?? __('messages.na') }}</span>
                             </div>
                         </td>
                         <td>
                             <span class="badge !text-[10px] {{ str_contains($log->action, 'blocked') ? '!bg-rose-500/10 !text-rose-500' : (str_contains($log->action, 'completed') ? '!bg-emerald-500/10 !text-emerald-500' : (str_contains($log->action, 'created') ? '!bg-pink-500/10 !text-pink-500' : '!bg-gray-500/10 !text-gray-500')) }}">
-                                {{ ucfirst(str_replace('_', ' ', $log->action)) }}
+                                {{ __('messages.' . $log->action) }}
                             </span>
                         </td>
                         <td class="text-sm text-gray-500 dark:text-gray-400">{{ $log->description }}</td>
@@ -73,7 +73,7 @@
                         <td class="text-sm text-gray-500 dark:text-gray-400">{{ $log->created_at->format('d M, H:i') }}</td>
                     </tr>
                     @empty
-                    <tr><td colspan="5"><div class="empty-state py-8"><h3>No activity logs found</h3></div></td></tr>
+                    <tr><td colspan="5"><div class="empty-state py-8"><h3>{{ __('messages.no_activity_logs_found') }}</h3></div></td></tr>
                     @endforelse
                 </tbody>
             </table>

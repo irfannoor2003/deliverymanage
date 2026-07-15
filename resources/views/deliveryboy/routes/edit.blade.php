@@ -114,12 +114,14 @@
         <div class="text-center py-6 text-gray-500 dark:text-gray-400 text-sm" id="noPitStops">{{ __('messages.no_pit_stops_yet') }}</div>
         @endif
 
+        @if($route->status !== 'completed')
         <div class="pt-4 border-t border-gray-100 dark:border-white/5">
             <button type="button" onclick="showPitStopModal({{ $route->id }})" class="btn btn-secondary w-full !border-dashed !border-2">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="20" height="20"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
                 {{ __('messages.add_pit_stop') }}
             </button>
         </div>
+        @endif
     </div>
     @endif
 </div>

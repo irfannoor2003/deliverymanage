@@ -22,7 +22,7 @@
                 </div>
                 <div>
                     <div class="text-2xl font-bold text-gray-900 dark:text-white">{{ $stats['total_routes'] }}</div>
-                    <div class="text-xs text-gray-500 dark:text-gray-400">Total Routes</div>
+                    <div class="text-xs text-gray-500 dark:text-gray-400">{{ __('messages.total_routes') }}</div>
                 </div>
             </div>
         </div>
@@ -33,7 +33,7 @@
                 </div>
                 <div>
                     <div class="text-2xl font-bold text-gray-900 dark:text-white">{{ $stats['pending_routes'] }}</div>
-                    <div class="text-xs text-gray-500 dark:text-gray-400">Pending</div>
+                    <div class="text-xs text-gray-500 dark:text-gray-400">{{ __('messages.pending') }}</div>
                 </div>
             </div>
         </div>
@@ -44,7 +44,7 @@
                 </div>
                 <div>
                     <div class="text-2xl font-bold text-gray-900 dark:text-white">{{ $stats['in_progress_routes'] }}</div>
-                    <div class="text-xs text-gray-500 dark:text-gray-400">In Progress</div>
+                    <div class="text-xs text-gray-500 dark:text-gray-400">{{ __('messages.in_progress') }}</div>
                 </div>
             </div>
         </div>
@@ -55,7 +55,7 @@
                 </div>
                 <div>
                     <div class="text-2xl font-bold text-gray-900 dark:text-white">{{ $stats['completed_routes'] }}</div>
-                    <div class="text-xs text-gray-500 dark:text-gray-400">Completed</div>
+                    <div class="text-xs text-gray-500 dark:text-gray-400">{{ __('messages.completed') }}</div>
                 </div>
             </div>
         </div>
@@ -75,8 +75,8 @@
     <!-- Recent Routes -->
     <div class="glass-card p-6">
         <div class="flex items-center justify-between mb-6">
-            <h2 class="text-lg font-bold text-gray-900 dark:text-white">Recent Routes</h2>
-            <a href="{{ route('saleshead.reports') }}" class="btn btn-primary btn-sm">View All</a>
+            <h2 class="text-lg font-bold text-gray-900 dark:text-white">{{ __('messages.recent_routes') }}</h2>
+            <a href="{{ route('saleshead.reports') }}" class="btn btn-primary btn-sm">{{ __('messages.view_all') }}</a>
         </div>
 
         @if($recentRoutes->count() > 0)
@@ -84,11 +84,11 @@
             <table class="glass-table">
                 <thead>
                     <tr>
-                        <th>Delivery Boy</th>
-                        <th>Route</th>
-                        <th>KM</th>
-                        <th>Status</th>
-                        <th>Date</th>
+                        <th>{{ __('messages.delivery_boy') }}</th>
+                        <th>{{ __('messages.route') }}</th>
+                        <th>{{ __('messages.km') }}</th>
+                        <th>{{ __('messages.status') }}</th>
+                        <th>{{ __('messages.date') }}</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -98,14 +98,14 @@
                         <td>
                             <div class="flex items-center gap-2">
                                 <div class="w-7 h-7 rounded-full bg-pink-500/10 text-pink-500 flex items-center justify-center text-[9px] font-bold">{{ strtoupper(substr($route->deliveryBoy->name ?? 'NA', 0, 2)) }}</div>
-                                <span class="font-semibold">{{ $route->deliveryBoy->name ?? 'N/A' }}</span>
+                                <span class="font-semibold">{{ $route->deliveryBoy->name ?? __('messages.na') }}</span>
                             </div>
                         </td>
                         <td class="text-gray-500 dark:text-gray-400">{{ $route->from_location }} → {{ $route->to_location }}</td>
-                        <td class="font-mono font-bold text-pink-500">{{ number_format($route->total_km, 1) }} km</td>
-                        <td><span class="badge badge-{{ $route->status }}">{{ ucfirst(str_replace('_', ' ', $route->status)) }}</span></td>
+                        <td class="font-mono font-bold text-pink-500">{{ number_format($route->total_km, 1) }}{{ __('messages.km_suffix') }}</td>
+                        <td><span class="badge badge-{{ $route->status }}">{{ __('messages.' . $route->status) }}</span></td>
                         <td class="text-gray-500 dark:text-gray-400 text-sm">{{ $route->created_at->format('d M, Y') }}</td>
-                        <td><a href="{{ route('saleshead.routes.view', $route) }}" class="text-xs font-bold text-pink-500 hover:underline">View</a></td>
+                        <td><a href="{{ route('saleshead.routes.view', $route) }}" class="text-xs font-bold text-pink-500 hover:underline">{{ __('messages.view') }}</a></td>
                     </tr>
                     @endforeach
                 </tbody>
@@ -114,8 +114,8 @@
         @else
         <div class="empty-state">
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
-            <h3>No routes yet</h3>
-            <p>Delivery routes will appear here once created.</p>
+            <h3>{{ __('messages.no_routes') }}</h3>
+            <p>{{ __('messages.no_routes_desc') }}</p>
         </div>
         @endif
     </div>

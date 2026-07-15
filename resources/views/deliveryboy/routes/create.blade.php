@@ -26,21 +26,23 @@
                     <div class="flex-1">
                         <label class="block text-[10px] font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">{{ __('messages.to') }}</label>
                         <div class="relative">
-                            <input type="text" name="to_location" required class="glass-input pr-10 text-base" placeholder="Say where you're going..." id="toLocation">
+                            <input type="text" name="to_location" required class="glass-input pr-10 text-base" placeholder="{{ __('messages.say_where_going') }}" id="toLocation">
                             <button type="button" onclick="startSpeechToText('toLocation')" class="absolute right-2 top-1/2 -translate-y-1/2 audio-btn" title="{{ __('messages.record_audio') }}">
                                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="20" height="20"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/></svg>
                             </button>
                         </div>
-                        <p class="text-xs text-gray-400 mt-2">Tap mic, say your destination, then submit. Audio saved with route.</p>
+                        <p class="text-xs text-gray-400 mt-2">{{ __('messages.tap_mic_destination') }}</p>
                     </div>
                 </div>
             </div>
 
             <input type="hidden" name="from_location" value="Office">
+            <input type="hidden" name="latitude" id="latitudeInput" value="">
+            <input type="hidden" name="longitude" id="longitudeInput" value="">
             <input type="file" name="audio" id="audioInput" class="hidden" accept="audio/*">
 
             <div class="flex flex-col sm:flex-row gap-3 mt-6 pt-6 border-t border-gray-100 dark:border-white/5">
-                <button type="submit" class="btn btn-primary flex-1">{{ __('messages.create') }}</button>
+                <button type="submit" id="submitBtn" class="btn btn-primary flex-1">{{ __('messages.create') }}</button>
                 <a href="{{ route('deliveryboy.dashboard') }}" class="btn btn-secondary flex-1">{{ __('messages.cancel') }}</a>
             </div>
         </form>
@@ -48,6 +50,29 @@
 </div>
 
 <script>
+    // Get user location on page load
+    var latInput = document.getElementById('latitudeInput');
+    var lngInput = document.getElementById('longitudeInput');
+    var submitBtn = document.getElementById('submitBtn');
+
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(pos) {
+            latInput.value = pos.coords.latitude;
+            lngInput.value = pos.coords.longitude;
+        }, function() {
+            latInput.value = '';
+            lngInput.value = '';
+        }, { timeout: 10000 });
+    }
+
+    document.querySelector('form').addEventListener('submit', function(e) {
+        if (!latInput.value || !lngInput.value) {
+            e.preventDefault();
+            alert('{{ __('messages.location_required') }}');
+            return;
+        }
+    });
+
     // Speech to text + auto-share audio to chat
     let speechRec = null;
     let audioRecorder = null;
@@ -58,7 +83,7 @@
         const input = document.getElementById(inputId);
 
         if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-            alert('Speech recognition is not supported in this browser. Try Chrome.');
+            alert('{{ __('messages.speech_not_supported') }}');
             return;
         }
 

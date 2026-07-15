@@ -21,7 +21,7 @@ class AuthController extends Controller
         $user = $this->authService->login($request->pin);
 
         if (!$user) {
-            return back()->with('error', 'Invalid PIN')->withInput();
+            return back()->with('error', __('messages.invalid_pin'))->withInput();
         }
 
         return $this->authService->redirectBasedOnRole($user->role);

@@ -5,7 +5,6 @@ namespace App\Notifications;
 use App\Models\DeliveryRoute;
 use App\Models\User;
 use Illuminate\Bus\Queueable;
-use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
 class DeliveryCompletedNotification extends Notification
@@ -23,19 +22,7 @@ class DeliveryCompletedNotification extends Notification
 
     public function via(object $notifiable): array
     {
-        return ['mail', 'database'];
-    }
-
-    public function toMail(object $notifiable): MailMessage
-    {
-        return (new MailMessage)
-            ->subject('Delivery #' . $this->route->id . ' Completed')
-            ->greeting('Hello ' . $notifiable->name)
-            ->line('Delivery route #' . $this->route->id . ' has been completed by ' . $this->deliveryBoy->name)
-            ->line('From: ' . $this->route->from_location)
-            ->line('To: ' . $this->route->to_location)
-            ->line('Total KM: ' . $this->route->total_km)
-            ->action('View Report', url('/admin/reports'));
+        return ['database'];
     }
 
     public function toArray(object $notifiable): array
