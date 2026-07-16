@@ -21,6 +21,15 @@ class DeliveryBoyController extends Controller
 
     public function dashboard()
     {
+        $stats = $this->deliveryService->getDeliveryBoyStats();
+        $routes = \App\Models\DeliveryRoute::where('delivery_boy_id', Auth::id())
+            ->orderBy('created_at', 'desc')
+            ->paginate(20);
+        return view('deliveryboy.report', compact('stats', 'routes'));
+    }
+
+    public function myRoutes()
+    {
         if (Auth::user()->hasBlockedRoutes()) {
             session()->flash('error', __('messages.you_have_blocked_routes'));
         }
@@ -124,7 +133,7 @@ class DeliveryBoyController extends Controller
         $request->validate([
             'total_km' => 'required|numeric|min:0',
             'boc' => 'nullable|string|max:255',
-            'image' => 'nullable|image|max:5120',
+            'image' => 'required|image|max:5120',
         ]);
 
         $data = [

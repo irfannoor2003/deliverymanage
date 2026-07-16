@@ -17,20 +17,20 @@
             <div>
                 <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{{ __('messages.delivery_boy') }}</label>
                 <select name="delivery_boy_id" class="glass-input glass-select pr-8 py-2 text-sm">
-                    <option value="">{{ __('messages.all') }}</option>
+                    <option value="" class="dark:!bg-[#1a1a2e] dark:!text-white">{{ __('messages.all') }}</option>
                     @foreach($deliveryBoys as $db)
-                    <option value="{{ $db->id }}" {{ request('delivery_boy_id') == $db->id ? 'selected' : '' }}>{{ $db->name }}</option>
+                    <option value="{{ $db->id }}" class="dark:!bg-[#1a1a2e] dark:!text-white" {{ request('delivery_boy_id') == $db->id ? 'selected' : '' }}>{{ $db->name }}</option>
                     @endforeach
                 </select>
             </div>
             <div>
                 <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{{ __('messages.status') }}</label>
                 <select name="status" class="glass-input glass-select pr-8 py-2 text-sm">
-                    <option value="">{{ __('messages.all') }}</option>
-                    <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>{{ __('messages.pending') }}</option>
-                    <option value="in_progress" {{ request('status') === 'in_progress' ? 'selected' : '' }}>{{ __('messages.in_progress') }}</option>
-                    <option value="completed" {{ request('status') === 'completed' ? 'selected' : '' }}>{{ __('messages.completed') }}</option>
-                    <option value="blocked" {{ request('status') === 'blocked' ? 'selected' : '' }}>{{ __('messages.blocked') }}</option>
+                    <option value="" class="dark:!bg-[#1a1a2e] dark:!text-white">{{ __('messages.all') }}</option>
+                    <option value="pending" class="dark:!bg-[#1a1a2e] dark:!text-white" {{ request('status') === 'pending' ? 'selected' : '' }}>{{ __('messages.pending') }}</option>
+                    <option value="in_progress" class="dark:!bg-[#1a1a2e] dark:!text-white" {{ request('status') === 'in_progress' ? 'selected' : '' }}>{{ __('messages.in_progress') }}</option>
+                    <option value="completed" class="dark:!bg-[#1a1a2e] dark:!text-white" {{ request('status') === 'completed' ? 'selected' : '' }}>{{ __('messages.completed') }}</option>
+                    <option value="blocked" class="dark:!bg-[#1a1a2e] dark:!text-white" {{ request('status') === 'blocked' ? 'selected' : '' }}>{{ __('messages.blocked') }}</option>
                 </select>
             </div>
             <div>

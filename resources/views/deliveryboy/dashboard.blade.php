@@ -168,8 +168,8 @@
                     <input type="number" step="0.01" name="stop_km" class="glass-input">
                 </div>
                 <div>
-                    <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{{ __('messages.image') }}</label>
-                    <input type="file" name="image" accept="image/*" class="glass-input">
+                    <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{{ __('messages.image') }} <span class="text-red-500">*</span></label>
+                    <input type="file" name="image" accept="image/*" class="glass-input" required>
                 </div>
                 <input type="file" name="audio" id="pitModalAudioInput" class="hidden" accept="audio/*">
                 <div class="flex gap-3 pt-2">
@@ -198,12 +198,12 @@
                     <input type="number" step="0.01" name="total_km" required class="glass-input" placeholder="0.00">
                 </div>
                 <div>
-                    <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{{ __('messages.boc') }}</label>
-                    <input type="text" name="boc" class="glass-input" placeholder="{{ __('messages.optional') }}">
+                    <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{{ __('messages.boc') }} <span class="text-gray-400">({{ __('messages.optional') }})</span></label>
+                    <input type="text" name="boc" class="glass-input" placeholder="{{ __('messages.visit_note_placeholder') }}">
                 </div>
                 <div>
-                    <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{{ __('messages.image') }}</label>
-                    <input type="file" name="image" accept="image/*" class="glass-input">
+                    <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{{ __('messages.image') }} <span class="text-red-500">*</span></label>
+                    <input type="file" name="image" accept="image/*" class="glass-input" required>
                 </div>
 
                 <!-- Pit Stops Section -->
@@ -234,8 +234,8 @@
                             <input type="number" step="0.01" name="stop_km" class="glass-input" placeholder="0.00">
                         </div>
                         <div>
-                            <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{{ __('messages.image') }}</label>
-                            <input type="file" name="stop_image" accept="image/*" class="glass-input">
+                            <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{{ __('messages.image') }} <span class="text-red-500">*</span></label>
+                            <input type="file" name="stop_image" accept="image/*" class="glass-input" required>
                         </div>
                         <div class="flex gap-2">
                             <button type="button" onclick="addPitStopFromModal()" class="btn btn-primary flex-1 text-xs">{{ __('messages.add_pit_stop') }}</button>

@@ -14,16 +14,16 @@
             <div>
                 <label class="block text-[10px] font-medium text-gray-500 dark:text-gray-400 mb-1">{{ __('messages.action') }}</label>
                 <select name="action" class="glass-input !py-1.5 text-xs">
-                    <option value="">{{ __('messages.all') }}</option>
-                    <option value="login" {{ request('action') === 'login' ? 'selected' : '' }}>{{ __('messages.login') }}</option>
-                    <option value="logout" {{ request('action') === 'logout' ? 'selected' : '' }}>{{ __('messages.logout') }}</option>
-                    <option value="delivery_started" {{ request('action') === 'delivery_started' ? 'selected' : '' }}>{{ __('messages.delivery_started') }}</option>
-                    <option value="delivery_completed" {{ request('action') === 'delivery_completed' ? 'selected' : '' }}>{{ __('messages.delivery_completed') }}</option>
-                    <option value="delivery_blocked" {{ request('action') === 'delivery_blocked' ? 'selected' : '' }}>{{ __('messages.delivery_blocked') }}</option>
-                    <option value="delivery_unblocked" {{ request('action') === 'delivery_unblocked' ? 'selected' : '' }}>{{ __('messages.delivery_unblocked') }}</option>
-                    <option value="user_created" {{ request('action') === 'user_created' ? 'selected' : '' }}>{{ __('messages.user_created') }}</option>
-                    <option value="user_deleted" {{ request('action') === 'user_deleted' ? 'selected' : '' }}>{{ __('messages.user_deleted') }}</option>
-                    <option value="chat_sent" {{ request('action') === 'chat_sent' ? 'selected' : '' }}>{{ __('messages.chat_sent') }}</option>
+                    <option value="" class="dark:!bg-[#1a1a2e] dark:!text-white">{{ __('messages.all') }}</option>
+                    <option value="login" class="dark:!bg-[#1a1a2e] dark:!text-white" {{ request('action') === 'login' ? 'selected' : '' }}>{{ __('messages.login') }}</option>
+                    <option value="logout" class="dark:!bg-[#1a1a2e] dark:!text-white" {{ request('action') === 'logout' ? 'selected' : '' }}>{{ __('messages.logout') }}</option>
+                    <option value="delivery_started" class="dark:!bg-[#1a1a2e] dark:!text-white" {{ request('action') === 'delivery_started' ? 'selected' : '' }}>{{ __('messages.delivery_started') }}</option>
+                    <option value="delivery_completed" class="dark:!bg-[#1a1a2e] dark:!text-white" {{ request('action') === 'delivery_completed' ? 'selected' : '' }}>{{ __('messages.delivery_completed') }}</option>
+                    <option value="delivery_blocked" class="dark:!bg-[#1a1a2e] dark:!text-white" {{ request('action') === 'delivery_blocked' ? 'selected' : '' }}>{{ __('messages.delivery_blocked') }}</option>
+                    <option value="delivery_unblocked" class="dark:!bg-[#1a1a2e] dark:!text-white" {{ request('action') === 'delivery_unblocked' ? 'selected' : '' }}>{{ __('messages.delivery_unblocked') }}</option>
+                    <option value="user_created" class="dark:!bg-[#1a1a2e] dark:!text-white" {{ request('action') === 'user_created' ? 'selected' : '' }}>{{ __('messages.user_created') }}</option>
+                    <option value="user_deleted" class="dark:!bg-[#1a1a2e] dark:!text-white" {{ request('action') === 'user_deleted' ? 'selected' : '' }}>{{ __('messages.user_deleted') }}</option>
+                    <option value="chat_sent" class="dark:!bg-[#1a1a2e] dark:!text-white" {{ request('action') === 'chat_sent' ? 'selected' : '' }}>{{ __('messages.chat_sent') }}</option>
                 </select>
             </div>
             <div>

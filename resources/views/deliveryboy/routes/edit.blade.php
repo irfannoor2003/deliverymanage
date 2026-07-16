@@ -91,15 +91,15 @@
                             <input type="number" step="0.01" name="stop_km" class="glass-input text-sm" value="{{ $stop->stop_km }}">
                         </div>
                     </div>
-                    <div class="mt-3 flex items-end gap-3">
+                        <div class="mt-3 flex items-end gap-3">
                         <div class="flex-1">
-                            <label class="block text-[10px] font-medium text-gray-500 dark:text-gray-400 mb-1">{{ __('messages.image') }}</label>
+                            <label class="block text-[10px] font-medium text-gray-500 dark:text-gray-400 mb-1">{{ __('messages.image') }} <span class="text-red-500">*</span></label>
                             @if($stop->image_path)
                             <div class="mb-1">
                                 <img src="{{ asset('storage/' . $stop->image_path) }}" class="h-12 w-12 rounded-lg object-cover">
                             </div>
                             @endif
-                            <input type="file" name="image" accept="image/*" class="glass-input text-sm">
+                            <input type="file" name="image" accept="image/*" class="glass-input text-sm" required>
                         </div>
                         <button type="submit" class="btn btn-primary btn-sm">{{ __('messages.save') }}</button>
                     </div>
@@ -147,8 +147,8 @@
                     <input type="number" step="0.01" name="stop_km" class="glass-input" id="pitStopKm">
                 </div>
                 <div>
-                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{{ __('messages.image') }}</label>
-                    <input type="file" name="image" accept="image/*" class="glass-input" id="pitStopImage">
+                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{{ __('messages.image') }} <span class="text-red-500">*</span></label>
+                    <input type="file" name="image" accept="image/*" class="glass-input" id="pitStopImage" required>
                 </div>
                 <div class="flex gap-3 pt-2">
                     <button type="submit" class="btn btn-primary flex-1">{{ __('messages.add_pit_stop') }}</button>

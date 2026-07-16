@@ -17,6 +17,12 @@ class SalesHeadController extends Controller
         protected ExportService $exportService,
     ) {}
 
+    public function members()
+    {
+        $members = \App\Models\User::orderBy('role')->orderBy('name')->get();
+        return view('saleshead.members.index', compact('members'));
+    }
+
     public function dashboard()
     {
         $stats = [

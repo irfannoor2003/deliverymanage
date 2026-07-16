@@ -232,4 +232,9 @@ return [
     'offline' => 'Offline',
     'outside_office_radius' => 'You are outside the allowed office radius (:radius KM). Your distance: :distance KM.',
     'location_required' => 'Unable to get your location. Please enable GPS and try again.',
+    'visit_note_placeholder' => 'Visit note (optional)',
+    'my_report' => 'My Report',
+    'my_report_desc' => 'Your delivery performance summary.',
+    'no_report_data' => 'No report data available yet.',
+    'total_km_travelled' => 'Total KM Travelled',
 ];

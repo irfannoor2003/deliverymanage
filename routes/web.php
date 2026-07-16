@@ -43,6 +43,7 @@ Route::middleware('auth')->group(function () {
 
     Route::middleware('role:saleshead')->prefix('saleshead')->name('saleshead.')->group(function () {
         Route::get('/dashboard', [SalesHeadController::class, 'dashboard'])->name('dashboard');
+        Route::get('/members', [SalesHeadController::class, 'members'])->name('members');
         Route::get('/reports', [SalesHeadController::class, 'reports'])->name('reports');
         Route::get('/reports/export', [SalesHeadController::class, 'exportReport'])->name('reports.export');
         Route::get('/routes/{route}', [SalesHeadController::class, 'viewRoute'])->name('routes.view');
@@ -50,6 +51,7 @@ Route::middleware('auth')->group(function () {
 
     Route::middleware('role:deliveryboy')->prefix('deliveryboy')->name('deliveryboy.')->group(function () {
         Route::get('/dashboard', [DeliveryBoyController::class, 'dashboard'])->name('dashboard');
+        Route::get('/my-routes', [DeliveryBoyController::class, 'myRoutes'])->name('my-routes');
         Route::get('/routes/create', [DeliveryBoyController::class, 'createRoute'])->name('routes.create');
         Route::post('/routes', [DeliveryBoyController::class, 'storeRoute'])->name('routes.store');
         Route::post('/routes/{route}/status/{status}', [DeliveryBoyController::class, 'updateRouteStatus'])->name('routes.status');
