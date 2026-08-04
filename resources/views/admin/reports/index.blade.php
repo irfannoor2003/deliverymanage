@@ -104,5 +104,9 @@
             </table>
         </div>
     </div>
+
+    <div class="mt-6">
+        {{ $routes->appends(request()->query())->links() }}
+    </div>
 </div>
 @endsection

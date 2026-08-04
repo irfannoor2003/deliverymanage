@@ -71,7 +71,10 @@ class AdminController extends Controller
 
     public function reports()
     {
-        $routes = $this->deliveryService->getAllRoutes();
+        $routes = $this->deliveryService->getFilteredRoutes(
+            request()->only(['delivery_boy_id', 'status', 'from_date', 'to_date']),
+            perPage: 15
+        );
         $deliveryBoys = $this->reportService->getDeliveryBoys();
         return view('admin.reports.index', compact('routes', 'deliveryBoys'));
     }

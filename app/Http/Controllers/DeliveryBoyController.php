@@ -148,11 +148,17 @@ class DeliveryBoyController extends Controller
         $route->update($data);
         $this->deliveryService->updateStatus($route, 'completed');
 
+        $this->chatService->sendMessage("✅ Delivery #{$route->id} completed: {$route->from_location} → {$route->to_location} ({$route->total_km} km)");
+
         foreach ($route->stops as $stop) {
             $this->chatService->sendMessage("📍 Pit stop #{$stop->order}: {$stop->stop_name}");
             if ($stop->audio_path) {
                 $this->chatService->sendMessage(null, null, $stop->audio_path);
             }
+        }
+
+        if ($request->hasFile('image')) {
+            $this->chatService->sendMessage("📸 Delivery image captured");
         }
 
         return redirect()->route('deliveryboy.dashboard')

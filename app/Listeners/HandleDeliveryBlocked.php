@@ -12,7 +12,8 @@ class HandleDeliveryBlocked
     {
         app(ActivityService::class)->log(
             'delivery_blocked',
-            "Delivery #{$event->route->id} blocked (overdue)"
+            "Delivery #{$event->route->id} blocked (overdue)",
+            $event->route->delivery_boy_id
         );
 
         if ($event->route->deliveryBoy) {

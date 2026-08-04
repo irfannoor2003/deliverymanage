@@ -22,18 +22,18 @@ class DeliveryService
         return DeliveryRoute::where('delivery_boy_id', Auth::id())
             ->with('stops')
             ->orderBy('created_at', 'desc')
-            ->get();
+            ->paginate(10);
     }
 
     public function getDeliveryBoyStats()
     {
-        $routes = $this->getDeliveryBoyRoutes();
+        $base = DeliveryRoute::where('delivery_boy_id', Auth::id());
         return [
-            'total_routes' => $routes->count(),
-            'pending_routes' => $routes->where('status', 'pending')->count(),
-            'in_progress_routes' => $routes->where('status', 'in_progress')->count(),
-            'completed_routes' => $routes->where('status', 'completed')->count(),
-            'blocked_routes' => $routes->where('status', 'blocked')->count(),
+            'total_routes' => (clone $base)->count(),
+            'pending_routes' => (clone $base)->where('status', 'pending')->count(),
+            'in_progress_routes' => (clone $base)->where('status', 'in_progress')->count(),
+            'completed_routes' => (clone $base)->where('status', 'completed')->count(),
+            'blocked_routes' => (clone $base)->where('status', 'blocked')->count(),
         ];
     }
 
@@ -44,15 +44,16 @@ class DeliveryService
             ->get();
     }
 
-    public function getFilteredRoutes(array $filters)
+    public function getFilteredRoutes(array $filters, ?int $perPage = null)
     {
-        return DeliveryRoute::with('deliveryBoy')
+        $q = DeliveryRoute::with('deliveryBoy')
             ->when($filters['delivery_boy_id'] ?? null, fn($q, $v) => $q->where('delivery_boy_id', $v))
             ->when($filters['status'] ?? null, fn($q, $v) => $q->where('status', $v))
             ->when($filters['from_date'] ?? null, fn($q, $v) => $q->whereDate('created_at', '>=', $v))
             ->when($filters['to_date'] ?? null, fn($q, $v) => $q->whereDate('created_at', '<=', $v))
-            ->orderBy('created_at', 'desc')
-            ->get();
+            ->orderBy('created_at', 'desc');
+
+        return $perPage ? $q->paginate($perPage) : $q->get();
     }
 
     public function getRecentRoutes(int $limit = 10)

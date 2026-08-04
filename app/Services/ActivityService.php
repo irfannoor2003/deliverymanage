@@ -8,10 +8,16 @@ use Illuminate\Http\Request;
 
 class ActivityService
 {
-    public function log(string $action, ?string $description = null, ?int $userId = null): ActivityLog
+    public function log(string $action, ?string $description = null, ?int $userId = null): ?ActivityLog
     {
+        $userId = $userId ?? Auth::id();
+
+        if (!$userId) {
+            return null;
+        }
+
         return ActivityLog::create([
-            'user_id' => $userId ?? Auth::id(),
+            'user_id' => $userId,
             'action' => $action,
             'description' => $description,
             'ip_address' => request()->ip(),

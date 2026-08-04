@@ -67,6 +67,17 @@
         </div>
     </div>
 
+    <!-- Validation Errors -->
+    @if($errors->any())
+    <div class="mb-6 p-4 rounded-2xl bg-rose-50 dark:bg-rose-900/80 border border-rose-300 dark:border-rose-700 text-rose-800 dark:text-rose-200 text-sm font-semibold shadow-xl">
+        <ul class="list-disc list-inside space-y-1">
+            @foreach($errors->all() as $error)
+            <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+    @endif
+
     <!-- Routes List -->
     @forelse($routes as $route)
     <div class="glass-card p-6 mb-4">
@@ -140,6 +151,10 @@
         <a href="{{ route('deliveryboy.routes.create') }}" class="btn btn-primary">{{ __('messages.create_first_route') }}</a>
     </div>
     @endforelse
+
+    <div class="mt-6">
+        {{ $routes->links() }}
+    </div>
 </div>
 
 <!-- Pit Stop Modal -->
@@ -190,7 +205,7 @@
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="20" height="20"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
             </button>
         </div>
-        <form action="" method="POST" enctype="multipart/form-data" id="completeForm" onsubmit="this.querySelector('button[type=submit]').disabled = true; this.querySelector('button[type=submit]').classList.add('opacity-50', 'cursor-not-allowed');">
+        <form action="" method="POST" enctype="multipart/form-data" id="completeForm" onsubmit="var btn=this.querySelector('button[type=submit]');if(btn.dataset.submitted){return false;}btn.dataset.submitted='1';btn.classList.add('opacity-50','cursor-not-allowed');btn.innerHTML='Processing...';">
             @csrf
             <div class="space-y-4">
                 <div>
@@ -223,7 +238,7 @@
                         <div>
                             <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{{ __('messages.stop_name') }}</label>
                             <div class="relative">
-                                <input type="text" name="stop_name" class="glass-input pr-10" id="modalStopName" placeholder="{{ __('messages.pit_stop_name_placeholder') }}">
+                                <input type="text" name="stop_name" class="glass-input pr-10" id="modalStopName" placeholder="{{ __('messages.pit_stop_name_placeholder') }}" disabled>
                                 <button type="button" onclick="startSpeechToText('modalStopName')" class="absolute right-2 top-1/2 -translate-y-1/2 audio-btn" title="{{ __('messages.record_audio') }}">
                                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/></svg>
                                 </button>
@@ -231,11 +246,11 @@
                         </div>
                         <div>
                             <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{{ __('messages.km') }}</label>
-                            <input type="number" step="0.01" name="stop_km" class="glass-input" placeholder="0.00">
+                            <input type="number" step="0.01" name="stop_km" class="glass-input" placeholder="0.00" disabled>
                         </div>
                         <div>
                             <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{{ __('messages.image') }} <span class="text-red-500">*</span></label>
-                            <input type="file" name="stop_image" accept="image/*" class="glass-input" required>
+                            <input type="file" name="stop_image" accept="image/*" class="glass-input" required disabled>
                         </div>
                         <div class="flex gap-2">
                             <button type="button" onclick="addPitStopFromModal()" class="btn btn-primary flex-1 text-xs">{{ __('messages.add_pit_stop') }}</button>
@@ -359,10 +374,12 @@
     function showPitStopFields() {
         document.getElementById('showPitStopBtn').classList.add('hidden');
         document.getElementById('pitStopFields').classList.remove('hidden');
+        document.querySelectorAll('#pitStopFields input').forEach(function(el) { el.removeAttribute('disabled'); });
     }
     function hidePitStopFields() {
         document.getElementById('showPitStopBtn').classList.remove('hidden');
         document.getElementById('pitStopFields').classList.add('hidden');
+        document.querySelectorAll('#pitStopFields input').forEach(function(el) { el.disabled = true; });
         document.getElementById('modalStopName').value = '';
         document.querySelector('#pitStopFields input[name="stop_km"]').value = '';
         document.querySelector('#pitStopFields input[name="stop_image"]').value = '';
@@ -373,6 +390,7 @@
         var km = document.querySelector('#pitStopFields input[name="stop_km"]').value;
         var imageInput = document.querySelector('#pitStopFields input[name="stop_image"]');
         if (!name) { alert('{{ __('messages.enter_stop_name') }}'); return; }
+        if (!imageInput.files[0]) { alert('{{ __('messages.image') }} is required for pit stop evidence'); return; }
         var submitBtn = document.querySelector('#pitStopFields .btn-primary');
         if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = '{{ __('messages.adding') }}'; }
         var formData = new FormData();
@@ -392,23 +410,28 @@
             body: formData
         })
         .then(function(r) {
-            return r.json().then(function(data) { return { status: r.status, data: data }; });
+            return r.text().then(function(text) {
+                try { var data = JSON.parse(text); return { status: r.status, data: data }; }
+                catch(e) { return { status: r.status, data: { message: text || 'Empty response' } }; }
+            });
         })
         .then(function(obj) {
             if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = '{{ __('messages.add_pit_stop') }}'; }
-            if (obj.status >= 200 && obj.status < 300 && obj.data.success) {
+            if (obj.status >= 200 && obj.status < 300 && obj.data && obj.data.success) {
                 hidePitStopFields();
                 refreshPitStops();
-            } else if (obj.status === 422 && obj.data.errors) {
+                var existing = document.getElementById('existingPitStops');
+                if (existing) { existing.classList.add('ring-2','ring-emerald-500/50','rounded-lg'); setTimeout(function(){ existing.classList.remove('ring-2','ring-emerald-500/50','rounded-lg'); }, 1500); }
+            } else if (obj.status === 422 && obj.data && obj.data.errors) {
                 var msgs = Object.values(obj.data.errors).flat();
                 alert('{{ __('messages.validation_errors') }}\n- ' + msgs.join('\n- '));
             } else {
-                alert(obj.data.message || '{{ __('messages.error_adding_pit_stop') }}');
+                alert(obj.data && obj.data.message ? obj.data.message : (obj.data && typeof obj.data === 'string' ? obj.data : '{{ __('messages.error_adding_pit_stop') }}'));
             }
         })
-        .catch(function() {
+        .catch(function(err) {
             if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = '{{ __('messages.add_pit_stop') }}'; }
-            alert('{{ __('messages.network_error') }}');
+            alert('{{ __('messages.network_error') }}: ' + (err.message || 'Unknown'));
         });
     }
     function refreshPitStops() {
@@ -422,13 +445,13 @@
                     container.innerHTML = '<p class="text-xs text-gray-400 dark:text-gray-500">{{ __('messages.no_pit_stops_yet') }}</p>';
                     return;
                 }
-                stops.forEach(function(s) {
-                    var el = document.createElement('div');
-                    el.className = 'flex items-center justify-between px-3 py-2 rounded-lg bg-gray-50 dark:bg-white/5 text-xs';
-                    var imgHtml = s.image_path ? '<img src="/storage/' + s.image_path + '" class="w-8 h-8 rounded-lg object-cover ml-2">' : '';
-                    el.innerHTML = '<div class="flex items-center gap-2"><span class="w-5 h-5 rounded-full bg-pink-500/20 text-pink-500 text-[9px] font-bold flex items-center justify-center flex-shrink-0">' + s.order + '</span><span class="font-medium text-gray-700 dark:text-gray-300">' + s.stop_name + '</span><span class="text-pink-500 font-mono">' + s.stop_km + '{{ __('messages.km_suffix') }}</span></div><div class="flex items-center gap-1">' + imgHtml + '</div>';
-                    container.appendChild(el);
-                });
+            stops.forEach(function(s) {
+                var el = document.createElement('div');
+                el.className = 'flex items-center justify-between px-3 py-2 rounded-lg bg-gray-50 dark:bg-white/5 text-xs';
+                var imgHtml = s.image_path ? '<img src="/storage/' + s.image_path + '" class="w-8 h-8 rounded-lg object-cover ml-2">' : '';
+                el.innerHTML = '<div class="flex items-center gap-2"><span class="w-5 h-5 rounded-full bg-pink-500/20 text-pink-500 text-[9px] font-bold flex items-center justify-center flex-shrink-0">' + s.order + '</span><span class="font-medium text-gray-700 dark:text-gray-300">' + s.stop_name + '</span><span class="text-pink-500 font-mono">' + s.stop_km + '{{ __('messages.km_suffix') }}</span></div><div class="flex items-center gap-1">' + imgHtml + '<button type="button" onclick="deletePitStop(' + s.id + ')" class="p-1 text-gray-400 hover:text-red-500 rounded-full hover:bg-red-500/10 transition-all" title="{{ __('messages.delete') }}"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="14" height="14"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button></div>';
+                container.appendChild(el);
+            });
             })
             .catch(function() {});
     }
@@ -467,6 +490,7 @@
         document.getElementById('completeModal').classList.remove('hidden');
         document.getElementById('showPitStopBtn').classList.remove('hidden');
         document.getElementById('pitStopFields').classList.add('hidden');
+        document.querySelectorAll('#pitStopFields input').forEach(function(el) { el.disabled = true; });
         refreshPitStops();
     }
     function hideCompleteModal() {

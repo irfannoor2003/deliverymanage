@@ -41,7 +41,10 @@ class SalesHeadController extends Controller
     public function reports()
     {
         $deliveryBoys = $this->reportService->getDeliveryBoys();
-        $routes = $this->deliveryService->getFilteredRoutes(request()->only(['delivery_boy_id', 'status', 'from_date', 'to_date']));
+        $routes = $this->deliveryService->getFilteredRoutes(
+            request()->only(['delivery_boy_id', 'status', 'from_date', 'to_date']),
+            perPage: 15
+        );
         return view('saleshead.reports.index', compact('deliveryBoys', 'routes'));
     }
 
