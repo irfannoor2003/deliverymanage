@@ -6,7 +6,7 @@ class ExportService
 {
     public function csv($routes): \Symfony\Component\HttpFoundation\StreamedResponse
     {
-        $headers = [__('messages.delivery_boy'), __('messages.from'), __('messages.to'), __('messages.km'), __('messages.boc'), __('messages.status'), __('messages.date')];
+        $headers = [__('messages.delivery_boy'), __('messages.from'), __('messages.to'), __('messages.km'), __('messages.boc'), __('messages.status'), __('messages.manual'), __('messages.self'), __('messages.date')];
         $callback = function () use ($routes, $headers) {
             $file = fopen('php://output', 'w');
             fputcsv($file, $headers);
@@ -18,6 +18,8 @@ class ExportService
                     $route->total_km,
                     $route->boc ?? '-',
                     $route->status,
+                    $route->is_manual ? __('messages.yes') : __('messages.no'),
+                    $route->is_manual ? __('messages.no') : __('messages.yes'),
                     $route->created_at->format('Y-m-d'),
                 ]);
             }

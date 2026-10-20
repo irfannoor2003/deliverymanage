@@ -13,9 +13,16 @@ use Illuminate\Support\Facades\Storage;
 
 class DeliveryService
 {
-    public const OFFICE_LAT = 31.540046340012797;
-    public const OFFICE_LNG = 74.3315299530999;
-    public const ALLOWED_RADIUS_KM = 4;
+    public float $officeLat;
+    public float $officeLng;
+    public float $allowedRadiusKm;
+
+    public function __construct()
+    {
+        $this->officeLat = (float) env('OFFICE_LAT', 31.540046340012797);
+        $this->officeLng = (float) env('OFFICE_LNG', 74.3315299530999);
+        $this->allowedRadiusKm = ((float) env('OFFICE_RADIUS', 4000)) / 1000;
+    }
 
     public function getDeliveryBoyRoutes()
     {
@@ -107,9 +114,17 @@ class DeliveryService
 
     public function addPitStop(DeliveryRoute $route, array $data, $image = null, $audio = null): RouteStop
     {
-        $imagePath = null;
+        $images = [];
         if ($image) {
-            $imagePath = $image->store('stop-images', 'public');
+            if (is_iterable($image)) {
+                foreach ($image as $img) {
+                    if ($img) {
+                        $images[] = $img->store('stop-images', 'public');
+                    }
+                }
+            } else {
+                $images[] = $image->store('stop-images', 'public');
+            }
         }
 
         $audioPath = null;
@@ -122,8 +137,9 @@ class DeliveryService
         return RouteStop::create([
             'delivery_route_id' => $route->id,
             'stop_name' => $data['stop_name'],
-            'stop_km' => $data['stop_km'] ?? 0,
-            'image_path' => $imagePath,
+            'stop_km' => $data['stop_km'],
+            'image_path' => $images[0] ?? null,
+            'images' => $images ?: null,
             'audio_path' => $audioPath,
             'order' => $order,
         ]);
@@ -148,11 +164,11 @@ class DeliveryService
         }
 
         $distance = $this->haversineDistance(
-            self::OFFICE_LAT, self::OFFICE_LNG,
+            $this->officeLat, $this->officeLng,
             $lat, $lng
         );
 
-        return $distance > self::ALLOWED_RADIUS_KM;
+        return $distance > $this->allowedRadiusKm;
     }
 
     private function haversineDistance(float $lat1, float $lng1, float $lat2, float $lng2): float

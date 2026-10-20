@@ -19,7 +19,7 @@ class DatabaseSeeder extends Seeder
 
             User::create([
                 'name' => 'Awais Anwar',
-                'pin' => Hash::make('0077'),
+                'pin' => Hash::make('1234'),
                 'role' => 'saleshead',
             ]);
 
@@ -31,7 +31,7 @@ class DatabaseSeeder extends Seeder
 
             User::create([
                 'name' => 'Arif Hussain ',
-                'pin' => Hash::make('2637'),
+                'pin' => Hash::make('1111'),
                 'role' => 'deliveryboy',
             ]);
         }

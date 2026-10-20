@@ -66,6 +66,8 @@ class DeliveryRoutesExport implements FromCollection, WithHeadings, WithMapping
             __('messages.status'),
             __('messages.km'),
             __('messages.total_trip_km'),
+            __('messages.manual'),
+            __('messages.self'),
             __('messages.date'),
         ];
     }
@@ -83,6 +85,8 @@ class DeliveryRoutesExport implements FromCollection, WithHeadings, WithMapping
                 '-',
                 $row->stop_km,
                 '-',
+                '-',
+                '-',
                 $row->created_at ? $row->created_at->format('Y-m-d H:i') : '',
             ];
         }
@@ -99,6 +103,8 @@ class DeliveryRoutesExport implements FromCollection, WithHeadings, WithMapping
             __('messages.' . $row->status),
             $row->total_km,
             $totalPitstopKm,
+            $row->is_manual ? __('messages.yes') : __('messages.no'),
+            $row->is_manual ? __('messages.no') : __('messages.yes'),
             $row->created_at->format('Y-m-d H:i'),
         ];
     }

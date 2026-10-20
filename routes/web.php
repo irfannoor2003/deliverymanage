@@ -39,6 +39,9 @@ Route::middleware('auth')->group(function () {
         Route::post('/blocked/{user}/{route}/unblock', [AdminController::class, 'unblockDelivery'])->name('blocked.unblock');
         Route::get('/activity-logs', [AdminController::class, 'activityLogs'])->name('activity-logs');
         Route::get('/routes/{route}', [AdminController::class, 'viewRoute'])->name('routes.view');
+        Route::get('/manual-deliveries', [AdminController::class, 'manualDeliveries'])->name('manual-deliveries');
+        Route::get('/manual-deliveries/create', [AdminController::class, 'createManualDelivery'])->name('manual-deliveries.create');
+        Route::post('/manual-deliveries', [AdminController::class, 'storeManualDelivery'])->name('manual-deliveries.store');
     });
 
     Route::middleware('role:saleshead')->prefix('saleshead')->name('saleshead.')->group(function () {
@@ -47,6 +50,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/reports', [SalesHeadController::class, 'reports'])->name('reports');
         Route::get('/reports/export', [SalesHeadController::class, 'exportReport'])->name('reports.export');
         Route::get('/routes/{route}', [SalesHeadController::class, 'viewRoute'])->name('routes.view');
+        Route::get('/manual-deliveries', [SalesHeadController::class, 'manualDeliveries'])->name('manual-deliveries');
+        Route::get('/manual-deliveries/create', [SalesHeadController::class, 'createManualDelivery'])->name('manual-deliveries.create');
+        Route::post('/manual-deliveries', [SalesHeadController::class, 'storeManualDelivery'])->name('manual-deliveries.store');
     });
 
     Route::middleware('role:deliveryboy')->prefix('deliveryboy')->name('deliveryboy.')->group(function () {
@@ -59,6 +65,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/routes/{route}/pit-stop', [DeliveryBoyController::class, 'addPitStop'])->name('routes.pitstop');
         Route::get('/routes/{route}/pit-stops', [DeliveryBoyController::class, 'getPitStops'])->name('routes.pitstops');
         Route::get('/routes/{route}/edit', [DeliveryBoyController::class, 'editRoute'])->name('routes.edit');
+        Route::get('/routes/{route}/view', [DeliveryBoyController::class, 'viewRoute'])->name('routes.view');
         Route::put('/routes/{route}', [DeliveryBoyController::class, 'updateRoute'])->name('routes.update');
         Route::put('/routes/{route}/pit-stop/{pitStop}', [DeliveryBoyController::class, 'updatePitStop'])->name('routes.pitstop.update');
         Route::delete('/routes/{route}/pit-stop/{pitStop}', [DeliveryBoyController::class, 'deletePitStop'])->name('routes.pitstop.delete');

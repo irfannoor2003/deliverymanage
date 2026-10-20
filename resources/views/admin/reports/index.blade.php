@@ -76,6 +76,8 @@
                         <th>{{ __('messages.km') }}</th>
                         <th>{{ __('messages.boc') }}</th>
                         <th>{{ __('messages.status') }}</th>
+                        <th>{{ __('messages.manual') }}</th>
+                        <th>{{ __('messages.self') }}</th>
                         <th>{{ __('messages.date') }}</th>
                         <th></th>
                     </tr>
@@ -94,11 +96,13 @@
                         <td class="font-mono font-bold text-pink-500">{{ number_format($route->total_km, 1) }}</td>
                         <td class="text-gray-500 dark:text-gray-400">{{ $route->boc ?? '—' }}</td>
                         <td><span class="badge badge-{{ $route->status }}">{{ __('messages.' . $route->status) }}</span></td>
+                        <td><span class="badge {{ $route->is_manual ? 'badge-completed' : 'badge-pending' }}">{{ $route->is_manual ? __('messages.yes') : __('messages.no') }}</span></td>
+                        <td><span class="badge {{ !$route->is_manual ? 'badge-completed' : 'badge-pending' }}">{{ !$route->is_manual ? __('messages.yes') : __('messages.no') }}</span></td>
                         <td class="text-gray-500 dark:text-gray-400 text-sm">{{ $route->created_at->format('d M, Y') }}</td>
                         <td><a href="{{ route('admin.routes.view', $route) }}" class="text-xs font-bold text-pink-500 hover:underline">{{ __('messages.view') }}</a></td>
                     </tr>
                     @empty
-                    <tr><td colspan="8"><div class="empty-state py-8"><h3>{{ __('messages.no_routes_found') }}</h3><p>{{ __('messages.try_adjusting_filters') }}</p></div></td></tr>
+                    <tr><td colspan="10"><div class="empty-state py-8"><h3>{{ __('messages.no_routes_found') }}</h3><p>{{ __('messages.try_adjusting_filters') }}</p></div></td></tr>
                     @endforelse
                 </tbody>
             </table>

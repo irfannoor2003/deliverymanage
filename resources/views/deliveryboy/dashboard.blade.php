@@ -82,7 +82,12 @@
     @forelse($routes as $route)
     <div class="glass-card p-6 mb-4">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
-            <span class="badge badge-{{ $route->status }}">{{ __('messages.' . $route->status) }}</span>
+            <div class="flex items-center gap-2 flex-wrap">
+                <span class="badge badge-{{ $route->status }}">{{ __('messages.' . $route->status) }}</span>
+                @if($route->is_manual)
+                <span class="badge badge-manual">📦 {{ __('messages.manual_visit') }}</span>
+                @endif
+            </div>
             <div class="text-right">
                 <div class="text-xl font-bold text-pink-500">{{ number_format($route->total_km, 1) }}{{ __('messages.km_suffix') }}</div>
                 <div class="text-xs text-gray-500 dark:text-gray-400">{{ __('messages.boc') }}: {{ $route->boc ?? __('messages.na') }}</div>
@@ -128,12 +133,15 @@
         @endif
 
         <div class="flex flex-col sm:flex-row gap-3 mt-4 pt-4 border-t border-gray-100 dark:border-white/5">
+            <a href="{{ route('deliveryboy.routes.view', $route) }}" class="btn btn-secondary flex-1">{{ __('messages.view') }}</a>
             @if($route->status === 'pending')
-            <form action="{{ route('deliveryboy.routes.status', [$route, 'in_progress']) }}" method="POST" class="flex-1" onsubmit="this.querySelector('button').disabled = true; this.querySelector('button').classList.add('opacity-50', 'cursor-not-allowed');">
+            <form action="{{ route('deliveryboy.routes.status', [$route, 'in_progress']) }}" method="POST" class="flex-1" id="startForm-{{ $route->id }}" onsubmit="return startDeliveryWithLocation(this, event);">
                 @csrf
-                <button type="submit" class="btn btn-primary w-full">{{ __('messages.start_delivery') }}</button>
+                <input type="hidden" name="latitude" id="startLat-{{ $route->id }}" value="">
+                <input type="hidden" name="longitude" id="startLng-{{ $route->id }}" value="">
+                <button type="submit" class="btn btn-primary w-full" id="startBtn-{{ $route->id }}">{{ __('messages.start_delivery') }}</button>
             </form>
-            <a href="{{ route('deliveryboy.routes.edit', $route) }}" class="btn btn-secondary flex-1">{{ __('messages.edit') }}</a>
+            <a href="{{ route('deliveryboy.routes.edit', $route) }}" class="btn btn-primary flex-1">{{ __('messages.edit') }}</a>
             @elseif($route->status === 'in_progress')
             <button onclick="openCompleteModal({{ $route->id }})" class="btn btn-primary flex-1 !bg-gradient-to-r !from-emerald-500 !to-emerald-600 !shadow-emerald-500/30">{{ __('messages.complete_delivery') }}</button>
             @elseif($route->status === 'completed')
@@ -180,11 +188,11 @@
                 </div>
                 <div>
                     <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{{ __('messages.km') }}</label>
-                    <input type="number" step="0.01" name="stop_km" class="glass-input">
+                    <input type="number" step="0.01" name="stop_km" class="glass-input" required>
                 </div>
                 <div>
-                    <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{{ __('messages.image') }} <span class="text-red-500">*</span></label>
-                    <input type="file" name="image" accept="image/*" class="glass-input" required>
+                    <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{{ __('messages.images') }} <span class="text-gray-400">({{ __('messages.optional') }})</span></label>
+                    <input type="file" name="images[]" accept="image/*" class="glass-input" multiple>
                 </div>
                 <input type="file" name="audio" id="pitModalAudioInput" class="hidden" accept="audio/*">
                 <div class="flex gap-3 pt-2">
@@ -213,12 +221,18 @@
                     <input type="number" step="0.01" name="total_km" required class="glass-input" placeholder="0.00">
                 </div>
                 <div>
-                    <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{{ __('messages.boc') }} <span class="text-gray-400">({{ __('messages.optional') }})</span></label>
-                    <input type="text" name="boc" class="glass-input" placeholder="{{ __('messages.visit_note_placeholder') }}">
+                    <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{{ __('messages.boc') }} <span class="text-red-500">*</span></label>
+                    <div class="relative">
+                        <input type="text" name="boc" required class="glass-input pr-10" id="completeNote" placeholder="{{ __('messages.visit_note_placeholder') }}">
+                        <button type="button" onclick="startSpeechToText('completeNote')" class="absolute right-2 top-1/2 -translate-y-1/2 audio-btn" title="{{ __('messages.record_audio') }}">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/></svg>
+                        </button>
+                    </div>
                 </div>
                 <div>
-                    <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{{ __('messages.image') }} <span class="text-red-500">*</span></label>
-                    <input type="file" name="image" accept="image/*" class="glass-input" required>
+                    <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{{ __('messages.images') }} <span class="text-gray-400">({{ __('messages.optional') }})</span></label>
+                    <input type="file" name="images[]" accept="image/*" class="glass-input" multiple>
+                    <p class="text-[10px] text-gray-400 mt-1">{{ __('messages.upload_multiple_images') }}</p>
                 </div>
 
                 <!-- Pit Stops Section -->
@@ -249,8 +263,8 @@
                             <input type="number" step="0.01" name="stop_km" class="glass-input" placeholder="0.00" disabled>
                         </div>
                         <div>
-                            <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{{ __('messages.image') }} <span class="text-red-500">*</span></label>
-                            <input type="file" name="stop_image" accept="image/*" class="glass-input" required disabled>
+                            <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{{ __('messages.images') }} <span class="text-gray-400">({{ __('messages.optional') }})</span></label>
+                            <input type="file" name="stop_images[]" accept="image/*" class="glass-input" multiple disabled>
                         </div>
                         <div class="flex gap-2">
                             <button type="button" onclick="addPitStopFromModal()" class="btn btn-primary flex-1 text-xs">{{ __('messages.add_pit_stop') }}</button>
@@ -382,22 +396,26 @@
         document.querySelectorAll('#pitStopFields input').forEach(function(el) { el.disabled = true; });
         document.getElementById('modalStopName').value = '';
         document.querySelector('#pitStopFields input[name="stop_km"]').value = '';
-        document.querySelector('#pitStopFields input[name="stop_image"]').value = '';
+        document.querySelector('#pitStopFields input[name="stop_images[]"]').value = '';
     }
     function addPitStopFromModal() {
         if (!currentRouteId) return;
         var name = document.getElementById('modalStopName').value.trim();
         var km = document.querySelector('#pitStopFields input[name="stop_km"]').value;
-        var imageInput = document.querySelector('#pitStopFields input[name="stop_image"]');
-        if (!name) { alert('{{ __('messages.enter_stop_name') }}'); return; }
-        if (!imageInput.files[0]) { alert('{{ __('messages.image') }} is required for pit stop evidence'); return; }
+        var imageInput = document.querySelector('#pitStopFields input[name="stop_images[]"]');
+        if (!name) { alert('Stop name is required'); return; }
+        if (!km) { alert('KM is required'); return; }
         var submitBtn = document.querySelector('#pitStopFields .btn-primary');
         if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = '{{ __('messages.adding') }}'; }
         var formData = new FormData();
         formData.append('_token', '{{ csrf_token() }}');
         formData.append('stop_name', name);
         if (km) formData.append('stop_km', km);
-        if (imageInput.files[0]) formData.append('image', imageInput.files[0]);
+        if (imageInput.files.length > 0) {
+            for (var i = 0; i < imageInput.files.length; i++) {
+                formData.append('images[]', imageInput.files[i]);
+            }
+        }
         if (audioBlob) {
             var ext = getAudioExt(audioBlob.type);
             var audioFile = new File([audioBlob], 'recording.' + ext, { type: audioBlob.type });
@@ -448,7 +466,16 @@
             stops.forEach(function(s) {
                 var el = document.createElement('div');
                 el.className = 'flex items-center justify-between px-3 py-2 rounded-lg bg-gray-50 dark:bg-white/5 text-xs';
-                var imgHtml = s.image_path ? '<img src="/storage/' + s.image_path + '" class="w-8 h-8 rounded-lg object-cover ml-2">' : '';
+                var imgs = (s.images && s.images.length) ? s.images : (s.image_path ? [s.image_path] : []);
+                var imgHtml = '';
+                if (imgs.length) {
+                    imgHtml = '<div class="flex items-center gap-1">';
+                    for (var i = 0; i < Math.min(imgs.length, 3); i++) {
+                        imgHtml += '<img src="/storage/' + imgs[i] + '" class="w-8 h-8 rounded-lg object-cover">';
+                    }
+                    if (imgs.length > 3) imgHtml += '<span class="text-gray-400">+' + (imgs.length - 3) + '</span>';
+                    imgHtml += '</div>';
+                }
                 el.innerHTML = '<div class="flex items-center gap-2"><span class="w-5 h-5 rounded-full bg-pink-500/20 text-pink-500 text-[9px] font-bold flex items-center justify-center flex-shrink-0">' + s.order + '</span><span class="font-medium text-gray-700 dark:text-gray-300">' + s.stop_name + '</span><span class="text-pink-500 font-mono">' + s.stop_km + '{{ __('messages.km_suffix') }}</span></div><div class="flex items-center gap-1">' + imgHtml + '<button type="button" onclick="deletePitStop(' + s.id + ')" class="p-1 text-gray-400 hover:text-red-500 rounded-full hover:bg-red-500/10 transition-all" title="{{ __('messages.delete') }}"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="14" height="14"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button></div>';
                 container.appendChild(el);
             });
@@ -496,6 +523,44 @@
     function hideCompleteModal() {
         document.getElementById('completeModal').classList.add('hidden');
         currentRouteId = null;
+    }
+
+    function startDeliveryWithLocation(form, e) {
+        e.preventDefault();
+        var routeId = form.id.replace('startForm-', '');
+        var btn = document.getElementById('startBtn-' + routeId);
+        var latInput = document.getElementById('startLat-' + routeId);
+        var lngInput = document.getElementById('startLng-' + routeId);
+
+        if (!navigator.geolocation) {
+            alert('{{ __('messages.location_required') }}');
+            return false;
+        }
+
+        btn.disabled = true;
+        btn.textContent = '{{ __('messages.getting_location') }}';
+        btn.classList.add('opacity-50', 'cursor-not-allowed');
+
+        function onSuccess(pos) {
+            latInput.value = pos.coords.latitude;
+            lngInput.value = pos.coords.longitude;
+            form.submit();
+        }
+
+        function onError(err) {
+            var msg = '{{ __('messages.location_required') }}';
+            if (err.code === 1) msg = 'Location permission denied. Please allow location access in your browser settings.';
+            else if (err.code === 2) msg = 'Location unavailable. Please make sure GPS is enabled and try again.';
+            else if (err.code === 3) msg = 'Location request timed out. Please try again.';
+            btn.disabled = false;
+            btn.textContent = '{{ __('messages.start_delivery') }}';
+            btn.classList.remove('opacity-50', 'cursor-not-allowed');
+            alert(msg);
+        }
+
+        navigator.geolocation.getCurrentPosition(onSuccess, onError, { enableHighAccuracy: false, timeout: 30000, maximumAge: 0 });
+
+        return false;
     }
 </script>
 @endsection

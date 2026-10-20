@@ -86,7 +86,7 @@ class DeliveryBoyController extends Controller
             ->with('success', __('messages.route_created'));
     }
 
-    public function updateRouteStatus(DeliveryRoute $route, string $status)
+    public function updateRouteStatus(Request $request, DeliveryRoute $route, string $status)
     {
         if ($route->delivery_boy_id !== Auth::id()) {
             return back()->with('error', __('messages.unauthorized'));
@@ -94,6 +94,21 @@ class DeliveryBoyController extends Controller
 
         if ($route->isBlocked()) {
             return back()->with('error', __('messages.route_blocked_contact_admin'));
+        }
+
+        if ($status === 'in_progress') {
+            if (!$request->latitude || !$request->longitude) {
+                return back()->with('error', __('messages.location_required'));
+            }
+            $error = $this->geoFenceService->validate((float) $request->latitude, (float) $request->longitude);
+            if ($error) {
+                return back()->with('error', $error);
+            }
+            $route->update([
+                'start_lat' => $request->latitude,
+                'start_lng' => $request->longitude,
+                'started_at' => now(),
+            ]);
         }
 
         $this->deliveryService->updateStatus($route, $status);
@@ -132,8 +147,10 @@ class DeliveryBoyController extends Controller
 
         $request->validate([
             'total_km' => 'required|numeric|min:0',
-            'boc' => 'nullable|string|max:255',
-            'image' => 'required|image|max:5120',
+            'boc' => 'required|string|max:255',
+            'image' => 'nullable|image|max:5120',
+            'images' => 'nullable|array',
+            'images.*' => 'nullable|image|max:5120',
         ]);
 
         $data = [
@@ -141,8 +158,20 @@ class DeliveryBoyController extends Controller
             'boc' => $request->boc,
         ];
 
-        if ($request->hasFile('image')) {
+        if ($request->hasFile('images')) {
+            $images = [];
+            foreach ($request->file('images') as $img) {
+                if ($img) {
+                    $images[] = $img->store('route-images', 'public');
+                }
+            }
+            $data['images'] = $images ?: null;
+            if ($images) {
+                $data['image_path'] = $images[0];
+            }
+        } elseif ($request->hasFile('image')) {
             $data['image_path'] = $request->file('image')->store('route-images', 'public');
+            $data['images'] = [$data['image_path']];
         }
 
         $route->update($data);
@@ -157,8 +186,8 @@ class DeliveryBoyController extends Controller
             }
         }
 
-        if ($request->hasFile('image')) {
-            $this->chatService->sendMessage("📸 Delivery image captured");
+        if ($route->images) {
+            $this->chatService->sendMessage("📸 Delivery image captured (" . count($route->images) . ")");
         }
 
         return redirect()->route('deliveryboy.dashboard')
@@ -190,7 +219,7 @@ class DeliveryBoyController extends Controller
         $data = $this->deliveryService->addPitStop(
             $route,
             $request->validated(),
-            $request->file('image'),
+            $request->file('images') ?: $request->file('image'),
             $request->file('audio')
         );
 
@@ -213,6 +242,7 @@ class DeliveryBoyController extends Controller
                 'stop_name' => $stop->stop_name,
                 'stop_km' => $stop->stop_km,
                 'image_path' => $stop->image_path,
+                'images' => $stop->images,
                 'order' => $stop->order,
             ];
         });
@@ -231,6 +261,17 @@ class DeliveryBoyController extends Controller
         return view('deliveryboy.routes.edit', compact('route'));
     }
 
+    public function viewRoute(DeliveryRoute $route)
+    {
+        if ($route->delivery_boy_id !== Auth::id()) {
+            return back()->with('error', __('messages.unauthorized'));
+        }
+
+        $route->load('deliveryBoy', 'stops');
+
+        return view('deliveryboy.routes.view', compact('route'));
+    }
+
     public function updateRoute(Request $request, DeliveryRoute $route)
     {
         if ($route->delivery_boy_id !== Auth::id()) {
@@ -242,6 +283,8 @@ class DeliveryBoyController extends Controller
             'total_km' => 'nullable|numeric|min:0',
             'boc' => 'nullable|string|max:255',
             'image' => 'nullable|image|max:5120',
+            'images' => 'nullable|array',
+            'images.*' => 'nullable|image|max:5120',
         ]);
 
         $data = [
@@ -255,8 +298,20 @@ class DeliveryBoyController extends Controller
             $data['boc'] = $request->boc;
         }
 
-        if ($request->hasFile('image')) {
+        if ($request->hasFile('images')) {
+            $images = [];
+            foreach ($request->file('images') as $img) {
+                if ($img) {
+                    $images[] = $img->store('route-images', 'public');
+                }
+            }
+            $data['images'] = $images ?: null;
+            if ($images) {
+                $data['image_path'] = $images[0];
+            }
+        } elseif ($request->hasFile('image')) {
             $data['image_path'] = $request->file('image')->store('route-images', 'public');
+            $data['images'] = [$data['image_path']];
         }
 
         $route->update($data);
@@ -273,17 +328,31 @@ class DeliveryBoyController extends Controller
 
         $request->validate([
             'stop_name' => 'required|string|max:255',
-            'stop_km' => 'nullable|numeric|min:0',
+            'stop_km' => 'required|numeric|min:0',
             'image' => 'nullable|image|max:5120',
+            'images' => 'nullable|array',
+            'images.*' => 'nullable|image|max:5120',
         ]);
 
         $data = [
             'stop_name' => $request->stop_name,
-            'stop_km' => $request->stop_km ?? 0,
+            'stop_km' => $request->stop_km,
         ];
 
-        if ($request->hasFile('image')) {
+        if ($request->hasFile('images')) {
+            $images = [];
+            foreach ($request->file('images') as $img) {
+                if ($img) {
+                    $images[] = $img->store('stop-images', 'public');
+                }
+            }
+            $data['images'] = $images ?: null;
+            if ($images) {
+                $data['image_path'] = $images[0];
+            }
+        } elseif ($request->hasFile('image')) {
             $data['image_path'] = $request->file('image')->store('stop-images', 'public');
+            $data['images'] = [$data['image_path']];
         }
 
         $pitStop->update($data);

@@ -50,10 +50,15 @@
             </div>
         </div>
 
-        @if($route->image_path)
+        @php $routeImages = $route->images ?: ($route->image_path ? [$route->image_path] : []); @endphp
+        @if(count($routeImages))
         <div class="mt-4">
-            <div class="text-xs text-gray-500 dark:text-gray-400 mb-2">{{ __('messages.route_image') }}</div>
-            <img src="{{ asset('storage/'.$route->image_path) }}" class="w-full max-w-md rounded-2xl border border-gray-200 dark:border-white/10">
+            <div class="text-xs text-gray-500 dark:text-gray-400 mb-2">{{ __('messages.route_images') }}</div>
+            <div class="flex flex-wrap gap-2">
+                @foreach($routeImages as $img)
+                <img src="{{ asset('storage/'.$img) }}" onclick="openImageModal(this.src)" class="h-20 w-20 rounded-xl object-cover border border-gray-200 dark:border-white/10 cursor-pointer hover:opacity-80 transition-all">
+                @endforeach
+            </div>
         </div>
         @endif
     </div>
@@ -135,8 +140,12 @@
                     @if($stop->stop_km)
                     <div class="text-sm text-gray-500 dark:text-gray-400">{{ number_format($stop->stop_km, 1) }} {{ __('messages.km') }}</div>
                     @endif
-                    @if($stop->image_path)
-                    <img src="{{ asset('storage/'.$stop->image_path) }}" class="mt-2 h-24 w-auto rounded-xl border border-gray-200 dark:border-white/10 object-cover">
+                    @if($stop->image_path || $stop->images)
+                    <div class="flex gap-1 mt-2 flex-wrap">
+                        @foreach(($stop->images ?: [$stop->image_path]) as $img)
+                        <img src="{{ asset('storage/'.$img) }}" onclick="openImageModal(this.src)" class="h-10 w-10 rounded-lg object-cover border border-gray-200 dark:border-white/10 cursor-pointer hover:opacity-80 transition-all">
+                        @endforeach
+                    </div>
                     @endif
                 </div>
             </div>

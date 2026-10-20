@@ -12,8 +12,10 @@ class StorePitStopRequest extends FormRequest
     {
         return [
             'stop_name' => 'required|string|max:255',
-            'stop_km' => 'nullable|numeric|min:0',
-            'image' => 'required|image|max:5120',
+            'stop_km' => 'required|numeric|min:0',
+            'image' => 'nullable|image|max:5120',
+            'images' => 'nullable|array',
+            'images.*' => 'nullable|image|max:5120',
             'audio' => 'nullable|file|max:10240',
         ];
     }

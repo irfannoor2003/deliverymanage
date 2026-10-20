@@ -45,13 +45,16 @@
             </div>
 
             <div class="mt-4">
-                    <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{{ __('messages.image') }}</label>
-                @if($route->image_path)
-                <div class="mb-2">
-                    <img src="{{ asset('storage/' . $route->image_path) }}" class="h-20 w-20 rounded-xl object-cover">
+                    <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{{ __('messages.images') }}</label>
+                @php $routeImages = $route->images ?: ($route->image_path ? [$route->image_path] : []); @endphp
+                @if(count($routeImages))
+                <div class="mb-2 flex gap-2 flex-wrap">
+                    @foreach($routeImages as $img)
+                    <img src="{{ asset('storage/' . $img) }}" class="h-20 w-20 rounded-xl object-cover">
+                    @endforeach
                 </div>
                 @endif
-                <input type="file" name="image" accept="image/*" class="glass-input">
+                <input type="file" name="images[]" accept="image/*" class="glass-input" multiple>
             </div>
             @endif
 
@@ -88,18 +91,21 @@
                         </div>
                         <div>
                             <label class="block text-[10px] font-medium text-gray-500 dark:text-gray-400 mb-1">{{ __('messages.km') }}</label>
-                            <input type="number" step="0.01" name="stop_km" class="glass-input text-sm" value="{{ $stop->stop_km }}">
+                            <input type="number" step="0.01" name="stop_km" class="glass-input text-sm" value="{{ $stop->stop_km }}" required>
                         </div>
                     </div>
                         <div class="mt-3 flex items-end gap-3">
                         <div class="flex-1">
-                            <label class="block text-[10px] font-medium text-gray-500 dark:text-gray-400 mb-1">{{ __('messages.image') }} <span class="text-red-500">*</span></label>
-                            @if($stop->image_path)
-                            <div class="mb-1">
-                                <img src="{{ asset('storage/' . $stop->image_path) }}" class="h-12 w-12 rounded-lg object-cover">
+                            <label class="block text-[10px] font-medium text-gray-500 dark:text-gray-400 mb-1">{{ __('messages.images') }}</label>
+                            @php $stopImages = $stop->images ?: ($stop->image_path ? [$stop->image_path] : []); @endphp
+                            @if(count($stopImages))
+                            <div class="mb-1 flex gap-1">
+                                @foreach($stopImages as $img)
+                                <img src="{{ asset('storage/' . $img) }}" class="h-12 w-12 rounded-lg object-cover">
+                                @endforeach
                             </div>
                             @endif
-                            <input type="file" name="image" accept="image/*" class="glass-input text-sm" required>
+                            <input type="file" name="images[]" accept="image/*" class="glass-input text-sm" multiple>
                         </div>
                         <button type="submit" class="btn btn-primary btn-sm">{{ __('messages.save') }}</button>
                     </div>
@@ -140,15 +146,15 @@
             <div class="space-y-4">
                 <div>
                     <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{{ __('messages.stop_name') }}</label>
-                    <input type="text" name="stop_name" required class="glass-input" id="pitStopName">
+                    <input type="text" name="stop_name" required class="glass-input" id="pitStopName" required >
                 </div>
                 <div>
                     <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{{ __('messages.km') }}</label>
-                    <input type="number" step="0.01" name="stop_km" class="glass-input" id="pitStopKm">
+                    <input type="number" step="0.01" name="stop_km" class="glass-input" id="pitStopKm" required>
                 </div>
                 <div>
-                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{{ __('messages.image') }} <span class="text-red-500">*</span></label>
-                    <input type="file" name="image" accept="image/*" class="glass-input" id="pitStopImage" required>
+                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{{ __('messages.images') }}</label>
+                    <input type="file" name="images[]" accept="image/*" class="glass-input" id="pitStopImage" multiple>
                 </div>
                 <div class="flex gap-3 pt-2">
                     <button type="submit" class="btn btn-primary flex-1">{{ __('messages.add_pit_stop') }}</button>
@@ -177,6 +183,18 @@
     document.getElementById('pitStopForm').addEventListener('submit', function(e) {
         e.preventDefault();
         var form = this;
+        var name = document.getElementById('pitStopName').value.trim();
+        var km = document.getElementById('pitStopKm').value.trim();
+
+        if (!name) {
+            alert('Stop name is required');
+            return;
+        }
+        if (!km) {
+            alert('KM is required');
+            return;
+        }
+
         var formData = new FormData(form);
         var btn = form.querySelector('button[type=submit]');
         btn.disabled = true;
@@ -207,12 +225,12 @@
                     + '</div>'
                     + '<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">'
                     + '<div><label class="block text-[10px] font-medium text-gray-500 dark:text-gray-400 mb-1">{{ __('messages.stop_name') }}</label><input type="text" name="stop_name" class="glass-input text-sm" value="' + stop.stop_name + '"></div>'
-                    + '<div><label class="block text-[10px] font-medium text-gray-500 dark:text-gray-400 mb-1">{{ __('messages.km') }}</label><input type="number" step="0.01" name="stop_km" class="glass-input text-sm" value="' + (stop.stop_km || 0) + '"></div>'
+                    + '<div><label class="block text-[10px] font-medium text-gray-500 dark:text-gray-400 mb-1">{{ __('messages.km') }}</label><input type="number" step="0.01" name="stop_km" class="glass-input text-sm" value="' + (stop.stop_km || 0) + '" required></div>'
                     + '</div>'
                     + '<div class="mt-3 flex items-end gap-3">'
-                    + '<div class="flex-1"><label class="block text-[10px] font-medium text-gray-500 dark:text-gray-400 mb-1">{{ __('messages.image') }}</label>'
+                    + '<div class="flex-1"><label class="block text-[10px] font-medium text-gray-500 dark:text-gray-400 mb-1">{{ __('messages.images') }}</label>'
                     + (stop.image_path ? '<div class="mb-1"><img src="/storage/' + stop.image_path + '" class="h-12 w-12 rounded-lg object-cover"></div>' : '')
-                    + '<input type="file" name="image" accept="image/*" class="glass-input text-sm"></div>'
+                    + '<input type="file" name="images[]" accept="image/*" class="glass-input text-sm" multiple></div>'
                     + '<button type="submit" class="btn btn-primary btn-sm">{{ __('messages.save') }}</button>'
                     + '</div>'
                     + '</form>'

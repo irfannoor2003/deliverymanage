@@ -9,6 +9,7 @@ use App\Services\DeliveryService;
 use App\Services\ReportService;
 use App\Services\UserService;
 use App\Services\ActivityService;
+use App\Services\ManualDeliveryService;
 use App\Exports\DeliveryRoutesExport;
 use App\Services\ExportService;
 use Illuminate\Http\Request;
@@ -23,6 +24,7 @@ class AdminController extends Controller
         protected ReportService $reportService,
         protected ActivityService $activityService,
         protected ExportService $exportService,
+        protected ManualDeliveryService $manualDeliveryService,
     ) {}
 
     public function dashboard()
@@ -116,5 +118,41 @@ class AdminController extends Controller
             (int) ($request->per_page ?? 20)
         );
         return view('admin.activity-logs', compact('logs'));
+    }
+
+    public function manualDeliveries()
+    {
+        $deliveries = $this->manualDeliveryService->getFiltered(
+            request()->only(['delivery_boy_id', 'from_date', 'to_date'])
+        );
+        $deliveryBoys = $this->manualDeliveryService->getDeliveryBoys();
+        return view('admin.manual-deliveries.index', compact('deliveries', 'deliveryBoys'));
+    }
+
+    public function createManualDelivery()
+    {
+        $deliveryBoys = $this->manualDeliveryService->getDeliveryBoys();
+        return view('admin.manual-deliveries.create', compact('deliveryBoys'));
+    }
+
+    public function storeManualDelivery(Request $request)
+    {
+        $request->validate([
+            'delivery_boy_id' => 'required|exists:users,id',
+            'title' => 'required|string|max:255',
+            'note' => 'required|string',
+            'delivery_date' => 'required|date',
+            'delivery_time' => 'required',
+            'total_km' => 'required|numeric|min:0',
+            'image' => 'nullable|image|max:5120',
+        ]);
+
+        $this->manualDeliveryService->create(
+            $request->only(['delivery_boy_id', 'title', 'note', 'delivery_date', 'delivery_time', 'total_km']),
+            $request->file('image')
+        );
+
+        return redirect()->route('admin.manual-deliveries')
+            ->with('success', __('messages.manual_delivery_created'));
     }
 }

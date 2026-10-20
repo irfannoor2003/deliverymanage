@@ -15,8 +15,10 @@ class DeliveryRoute extends Model
         'total_km',
         'boc',
         'image_path',
+        'images',
         'audio_path',
         'status',
+        'is_manual',
         'blocked_at',
         'unblocked_at',
         'started_at',
@@ -30,6 +32,8 @@ class DeliveryRoute extends Model
     {
         return [
             'total_km' => 'decimal:2',
+            'images' => 'array',
+            'is_manual' => 'boolean',
             'blocked_at' => 'datetime',
             'unblocked_at' => 'datetime',
             'started_at' => 'datetime',

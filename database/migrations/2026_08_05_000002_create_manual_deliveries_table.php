@@ -1,0 +1,28 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('manual_deliveries', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('delivery_boy_id')->constrained('users')->onDelete('cascade');
+            $table->string('title');
+            $table->text('note');
+            $table->date('delivery_date');
+            $table->time('delivery_time');
+            $table->string('image_path')->nullable();
+            $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->timestamps();
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('manual_deliveries');
+    }
+};

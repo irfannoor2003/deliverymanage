@@ -12,6 +12,7 @@ class RouteStop extends Model
         'stop_name',
         'stop_km',
         'image_path',
+        'images',
         'audio_path',
         'order',
         'lat',
@@ -22,6 +23,7 @@ class RouteStop extends Model
     {
         return [
             'stop_km' => 'decimal:2',
+            'images' => 'array',
             'lat' => 'decimal:7',
             'lng' => 'decimal:7',
         ];

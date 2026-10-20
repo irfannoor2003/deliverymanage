@@ -33,6 +33,8 @@
                     <th>{{ __('messages.route') }}</th>
                     <th>{{ __('messages.km') }}</th>
                     <th>{{ __('messages.status') }}</th>
+                    <th>{{ __('messages.manual') }}</th>
+                    <th>{{ __('messages.self') }}</th>
                     <th>{{ __('messages.date') }}</th>
                 </tr>
             </thead>
@@ -48,6 +50,8 @@
                     <td class="text-gray-500 dark:text-gray-400">{{ $route->from_location }} → {{ $route->to_location }}</td>
                     <td class="font-mono font-bold text-pink-500">{{ number_format($route->total_km, 1) }}{{ __('messages.km_suffix') }}</td>
                     <td><span class="badge badge-{{ $route->status }}">{{ __('messages.' . $route->status) }}</span></td>
+                    <td><span class="badge {{ $route->is_manual ? 'badge-completed' : 'badge-pending' }}">{{ $route->is_manual ? __('messages.yes') : __('messages.no') }}</span></td>
+                    <td><span class="badge {{ !$route->is_manual ? 'badge-completed' : 'badge-pending' }}">{{ !$route->is_manual ? __('messages.yes') : __('messages.no') }}</span></td>
                     <td class="text-gray-500 dark:text-gray-400 text-sm">{{ $route->created_at->format('d M, Y') }}</td>
                 </tr>
                 @endforeach
